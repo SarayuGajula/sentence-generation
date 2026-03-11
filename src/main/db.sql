@@ -1,17 +1,15 @@
 CREATE TABLE sources (
     id int IDENTITY(1,1) AUTO_INCREMENT PRIMARY KEY,
     filename varchar(255) NOT NULL,
+    word_count int NOT NULL,
     imported_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE words (
-    id int IDENTITY(1,1) AUTO_INCREMENT PRIMARY KEY,
-    word varchar(255) NOT NULL,
+    word varchar(255) PRIMARY KEY,
     general_count int NOT NULL,
     start_count int NOT NULL,
     end_count int NOT NULL,
-    source_id int NOT NULL,
-    FOREIGN KEY (source_id) REFERENCES sources(id)
 );
 
 CREATE TABLE bigrams (
