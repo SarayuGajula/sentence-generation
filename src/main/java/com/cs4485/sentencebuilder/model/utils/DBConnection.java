@@ -11,6 +11,7 @@ import java.sql.SQLException;
  * It utilizes JDBC for database access.
  *
  * @author Daniel Dimitrov
+ * 02/11/2026 - Initial creation
  */
 public class DBConnection {
     // Database credentials

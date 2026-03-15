@@ -3,6 +3,8 @@ package com.cs4485.sentencebuilder.model.entity;
 /**
  * Represents a Source entity in the application and maps directly to the 'sources' table in the database.
  * @author Daniel Dimitrov
+ * 02/11/2026 - Initial creation
+ * 02/14/2026 - Minor fixes
  */
 public class Source {
 
@@ -21,7 +23,7 @@ public class Source {
     }
 
     /**
-     * Constructor for reconstructing a User retrieved FROM the database.
+     * Constructor for reconstructing a Source retrieved FROM the database.
      * Includes the database-generated ID.
      */
     public Source(int id, String filename, int wordCount) {

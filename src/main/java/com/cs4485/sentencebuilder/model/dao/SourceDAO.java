@@ -13,6 +13,9 @@ import java.util.List;
 /**
  * Data Access Object for the Source entity.
  * Handles all CRUD operations for the 'sources' database table.
+ * @author Daniel Dimitrov
+ * 02/11/2026 - Initial creation
+ * 02/14/2026 - Minor fixes
  */
 public class SourceDAO {
 
@@ -52,7 +55,7 @@ public class SourceDAO {
      * @return A List of Source entities representing all records in the table.
      */
     public List<Source> getAll() {
-        List<Source> userList = new ArrayList<>();
+        List<Source> sourcesList = new ArrayList<>();
 
         String sql = "SELECT id, filename, word_count FROM sources";
 
@@ -68,9 +71,9 @@ public class SourceDAO {
                 String filename = rs.getString("filename");
                 int wordCount = rs.getInt("word_count");
 
-                Source user = new Source(id, filename, wordCount);
+                Source source = new Source(id, filename, wordCount);
 
-                userList.add(user);
+                sourcesList.add(source);
             }
 
         } catch (SQLException e) {
@@ -78,6 +81,6 @@ public class SourceDAO {
             e.printStackTrace();
         }
 
-        return userList;
+        return sourcesList;
     }
 }
