@@ -1,10 +1,11 @@
+package com.cs4485.sentencebuilder;
+
 /**
  * Provides utility methods for importing and tokenizing text files.
  * Reads text from a file and splits it into sentences and words.
  * @author Jeffrey Gilbert
  * 03/14/2026 - Initial creation
  */
-package com.cs4485.sentencebuilder;
 
 import java.io.IOException;         // Needed for handling file reading errors
 import java.nio.file.Files;         // Lets us read files easily
