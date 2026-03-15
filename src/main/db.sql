@@ -11,11 +11,11 @@ CREATE TABLE sources (
 
 CREATE TABLE words (
     word varchar(255) PRIMARY KEY,
-    general_count int NOT NULL,
+    total_count int NOT NULL,
     start_count int NOT NULL,
     end_count int NOT NULL
 );
-
+``
 CREATE TABLE bigrams (
     first_word varchar(255) NOT NULL,
     second_word varchar(255) NOT NULL,
