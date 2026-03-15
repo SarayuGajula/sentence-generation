@@ -1,11 +1,10 @@
+package com.cs4485.sentencebuilder;
 /**
  * Provides utility methods for analyzing word frequency and bigrams.
  * Maps to the 'words' and 'bigrams' tables in the database.
  * @author Jeffrey Gilbert
  * 03/14/2026 - Initial creation
  */
-package com.cs4485.sentencebuilder;
-
 import java.util.HashMap; // HashMap lets us store key-value pairs (word -> count)
 import java.util.List;    // List is the data type for the input (a list of words)
 import java.util.Map;     // Map is the data type we return (word -> count)
