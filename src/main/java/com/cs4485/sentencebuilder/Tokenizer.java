@@ -2,7 +2,7 @@ package com.cs4485.sentencebuilder;
 
 /**
  * Provides utility methods for importing and tokenizing text files.
- * Reads text from a file and splits it into sentences and words.
+ * Reads text from a file and splits it into words.
  * @author Sarayu Gajula
  * 03/14/2026 - Initial creation
  */
@@ -26,49 +26,28 @@ public class Tokenizer {
     }
 
     /**
-     * Takes a block of text, splits it into sentences,
-     * then splits each sentence into individual words.
-     * Keeps punctuation and capitalization exactly as they appear in the text.
-     * Example: "Hello world. How are you." → [["Hello", "world."], ["How", "are", "you."]]
+     * Takes a block of text and splits it into individual words.
+     * Punctuation stays attached to the word before it.
+     * Example: "Hello! How are you?" → ["Hello!", "How", "are", "you?"]
      */
-    public static List<List<String>> tokenize(String text) {
+    public static List<String> tokenize(String text) {
 
-        // Create an empty list that will hold all our sentences
-        List<List<String>> allSentences = new ArrayList<>();
+        // Create an empty list to hold all the words
+        List<String> words = new ArrayList<>();
 
-        // Split the text into sentences after each period, exclamation mark, or question mark
-        // The punctuation is KEPT at the end of the word (not thrown away)
-        String[] sentences = text.split("(?<=[.!?])\\s+");
+        // Split the text into words wherever there is a space
+        String[] splitWords = text.split("\\s+");
 
-        // Loop through each sentence
-        for (String sentence : sentences) {
+        // Loop through each word and add it to the list as-is
+        for (String word : splitWords) {
 
-            // Remove any extra spaces from the start and end of the sentence
-            sentence = sentence.trim();
-
-            // Skip the sentence if it's empty
-            if (sentence.isEmpty()) continue;
-
-            // Split the sentence into individual words wherever there is a space
-            String[] words = sentence.split("\\s+");
-
-            // Create a list to hold the words for this sentence
-            List<String> wordList = new ArrayList<>();
-
-            // Loop through each word and add it as-is (keeping punctuation and capitalization)
-            for (String word : words) {
-                if (!word.isEmpty()) {
-                    wordList.add(word);
-                }
-            }
-
-            // Add this sentence's word list to our main list
-            if (!wordList.isEmpty()) {
-                allSentences.add(wordList);
+            // Only add the word if it's not empty
+            if (!word.isEmpty()) {
+                words.add(word);
             }
         }
 
-        // Return the full list of sentences, each as a list of words
-        return allSentences;
+        // Return the full list of words
+        return words;
     }
 }
