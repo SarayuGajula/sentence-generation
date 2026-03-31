@@ -13,7 +13,9 @@ CREATE TABLE words (
     word varchar(255) PRIMARY KEY,
     total_count int NOT NULL,
     start_count int NOT NULL,
-    end_count int NOT NULL
+    end_count int NOT NULL,
+    uppercase_count int NOT NULL,
+    title_count int NOT NULL
 );
 ``
 CREATE TABLE bigrams (
