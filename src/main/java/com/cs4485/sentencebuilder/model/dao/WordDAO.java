@@ -26,7 +26,7 @@ public class WordDAO {
      * @return true if the insertion was successful, false otherwise.
      */
     public boolean insert(Word word) {
-        String sql = "INSERT INTO words (word, total_count, start_count, end_count) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO words (word, total_count, start_count, end_count, uppercase_count, title_count) VALUES (?, ?, ?, ?, ?, ?)";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
         try (Connection conn = DBConnection.getConnection();
@@ -37,6 +37,8 @@ public class WordDAO {
             preparedStatement.setInt(2, word.getTotalCount());
             preparedStatement.setInt(3, word.getStartCount());
             preparedStatement.setInt(4, word.getEndCount());
+            preparedStatement.setInt(5, word.getUppercaseCount());
+            preparedStatement.setInt(6, word.getTitleCount());
 
             // Insert word
             int rowsAffected = preparedStatement.executeUpdate();
@@ -59,7 +61,7 @@ public class WordDAO {
     public List<Word> getAll() {
         List<Word> wordList = new ArrayList<>();
 
-        String sql = "SELECT word, total_count, start_count, end_count FROM sources";
+        String sql = "SELECT word, total_count, start_count, end_count, uppercase_count, title_count FROM sources";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
         try (Connection conn = DBConnection.getConnection();
@@ -73,8 +75,10 @@ public class WordDAO {
                 int totalCount = rs.getInt("total_count");
                 int startCount = rs.getInt("start_count");
                 int endCount = rs.getInt("end_count");
+                int uppercaseCount = rs.getInt("uppercase_count");
+                int titleCount = rs.getInt("title_count");
 
-                Word w = new Word(word, totalCount, startCount, endCount);
+                Word w = new Word(word, totalCount, startCount, endCount, uppercaseCount, titleCount);
 
                 wordList.add(w);
             }

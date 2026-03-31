@@ -11,6 +11,8 @@ public class Word {
     private int totalCount;
     private int startCount; // Count at the beginning of a sentence
     private int endCount; // Count at the end of a sentence
+    private int uppercaseCount; // Fully UPPERCASED count
+    private int titleCount; // Title capitalization count (just the first letter is uppercased)
 
     /**
      * Constructor for creating a new Word object BEFORE it goes into the database
@@ -21,16 +23,20 @@ public class Word {
         totalCount = 0;
         startCount = 0;
         endCount = 0;
+        uppercaseCount = 0;
+        titleCount = 0;
     }
 
     /**
      * Constructor for reconstructing a Word retrieved FROM the database.
      */
-    public Word(String word, int totalCount, int startCount, int endCount) {
+    public Word(String word, int totalCount, int startCount, int endCount, int uppercaseCount, int titleCount) {
         this.word = word;
         this.totalCount = totalCount;
         this.startCount = startCount;
         this.endCount = endCount;
+        this.uppercaseCount = uppercaseCount;
+        this.titleCount = titleCount;
     }
 
     public String getWord() { return word; }
@@ -44,4 +50,10 @@ public class Word {
 
     public int getEndCount() { return endCount; }
     public void setEndCount(int endCount) { this.endCount = endCount; }
+
+    public int getUppercaseCount() { return uppercaseCount; }
+    public void setUppercaseCount(int uppercaseCount) { this.uppercaseCount = uppercaseCount; }
+
+    public int getTitleCount() { return titleCount; }
+    public void setTitleCount(int titleCount) { this.titleCount = titleCount; }
 }
