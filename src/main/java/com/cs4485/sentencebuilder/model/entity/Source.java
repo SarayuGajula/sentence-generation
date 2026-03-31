@@ -39,5 +39,10 @@ public class Source {
     public void setFilename(String filename) { this.filename = filename; }
 
     public int getWordCount() { return wordCount; }
-    public void setWordCount(int wordCount) { this.wordCount = wordCount; }
+    public void setWordCount(int wordCount) {
+        if (wordCount < 0) {
+            throw new IllegalArgumentException("Source word count cannot be negative");
+        }
+        this.wordCount = wordCount;
+    }
 }
