@@ -4,6 +4,7 @@ package com.cs4485.sentencebuilder.model.entity;
  * Represents a Bigram entity in the application and maps directly to the 'bigrams' table in the database.
  * @author Daniel Dimitrov
  * 03/14/2026 - Initial creation
+ * 03/31/2026 - Added negative check and exception for count setting
  */
 public class Bigram {
 
@@ -37,5 +38,10 @@ public class Bigram {
     public void setSecondWord(String secondWord) { this.secondWord = secondWord; }
 
     public int getCount() { return count; }
-    public void setCount(int count) { this.count = count; }
+    public void setCount(int count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("Bigram count cannot be negative");
+        }
+        this.count = count;
+    }
 }

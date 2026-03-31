@@ -4,6 +4,7 @@ package com.cs4485.sentencebuilder.model.entity;
  * Represents a Word entity in the application and maps directly to the 'words' table in the database.
  * @author Daniel Dimitrov
  * 03/14/2026 - Initial creation
+ * 03/31/2026 - Added uppercase and title counts, as well as negative checks and exceptions for all count settings
  */
 public class Word {
 
@@ -43,17 +44,42 @@ public class Word {
     public void setWord(String word) { this.word = word; }
 
     public int getTotalCount() { return totalCount; }
-    public void setTotalCount(int totalCount) { this.totalCount = totalCount; }
+    public void setTotalCount(int totalCount) {
+        if (totalCount < 0) {
+            throw new IllegalArgumentException("Word total count cannot be negative");
+        }
+        this.totalCount = totalCount;
+    }
 
     public int getStartCount() { return startCount; }
-    public void setStartCount(int startCount) { this.startCount = startCount; }
+    public void setStartCount(int startCount) {
+        if (startCount < 0) {
+            throw new IllegalArgumentException("Word start count cannot be negative");
+        }
+        this.startCount = startCount;
+    }
 
     public int getEndCount() { return endCount; }
-    public void setEndCount(int endCount) { this.endCount = endCount; }
+    public void setEndCount(int endCount) {
+        if (endCount < 0) {
+            throw new IllegalArgumentException("Word end count cannot be negative");
+        }
+        this.endCount = endCount;
+    }
 
     public int getUppercaseCount() { return uppercaseCount; }
-    public void setUppercaseCount(int uppercaseCount) { this.uppercaseCount = uppercaseCount; }
+    public void setUppercaseCount(int uppercaseCount) {
+        if (uppercaseCount < 0) {
+            throw new IllegalArgumentException("Word uppercase count cannot be negative");
+        }
+        this.uppercaseCount = uppercaseCount;
+    }
 
     public int getTitleCount() { return titleCount; }
-    public void setTitleCount(int titleCount) { this.titleCount = titleCount; }
+    public void setTitleCount(int titleCount) {
+        if (titleCount < 0) {
+            throw new IllegalArgumentException("Word title count cannot be negative");
+        }
+        this.titleCount = titleCount;
+    }
 }

@@ -1,6 +1,5 @@
 package com.cs4485.sentencebuilder.model.dao;
 
-import com.cs4485.sentencebuilder.model.entity.Source;
 import com.cs4485.sentencebuilder.model.entity.Word;
 import com.cs4485.sentencebuilder.model.utils.DBConnection;
 
@@ -16,6 +15,7 @@ import java.util.List;
  * Handles all CRUD operations for the 'words' database table.
  * @author Daniel Dimitrov
  * 02/14/2026 - Initial creation
+ * 03/31/2026 - Updated for newly added uppercase and title counts
  */
 public class WordDAO {
 
