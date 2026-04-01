@@ -5,6 +5,7 @@ package com.cs4485.sentencebuilder.model.entity;
  * @author Daniel Dimitrov
  * 02/11/2026 - Initial creation
  * 02/14/2026 - Minor fixes
+ * 03/31/2026 - Added negative check and exception for word count setting
  */
 public class Source {
 
