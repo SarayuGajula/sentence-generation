@@ -16,6 +16,7 @@ import java.util.List;
  * Handles all CRUD operations for the 'bigrams' database table.
  * @author Daniel Dimitrov
  * 02/14/2026 - Initial creation
+ * 04/01/2026 - Added getTopKMostCommonBigramsStartingWithWord
  */
 public class BigramDAO {
 
@@ -44,7 +45,7 @@ public class BigramDAO {
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("Error inserting source");
+            System.err.println("Error inserting bigram");
             e.printStackTrace();
         }
         return false;
@@ -58,7 +59,7 @@ public class BigramDAO {
     public List<Bigram> getAll() {
         List<Bigram> bigramList = new ArrayList<>();
 
-        String sql = "SELECT first_word, second_word, count FROM sources";
+        String sql = "SELECT first_word, second_word, count FROM bigrams";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
         try (Connection conn = DBConnection.getConnection();
@@ -78,7 +79,45 @@ public class BigramDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error retrieving all sources from the database");
+            System.err.println("Error retrieving all bigrams from the database");
+            e.printStackTrace();
+        }
+
+        return bigramList;
+    }
+
+    public List<Bigram> getTopKMostCommonBigramsStartingWithWord(int k, Word word) {
+        List<Bigram> bigramList = new ArrayList<>();
+
+        String sql = "SELECT TOP ? first_word, second_word, count FROM Bigrams WHERE first_word = ?;";
+
+        // try-catch automatically closes the PreparedStatement and handles any errors
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+
+            preparedStatement.setInt(1, k);
+            preparedStatement.setString(2, word.getWord());
+
+            // try-catch automatically closes the ResultSet and handles any errors
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                // Loop through the ResultSet and map each row to a Bigram entity
+                while (rs.next()) {
+                    // Store parameters in temporary variables
+                    String secondWord = rs.getString("second_word");
+                    int count = rs.getInt("count");
+
+                    Bigram bigram = new Bigram(word.getWord(), secondWord, count);
+
+                    bigramList.add(bigram);
+                }
+
+            } catch (SQLException e) {
+                System.err.println("Error retrieving top K most common bigrams from the database");
+                e.printStackTrace();
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error retrieving all bigrams from the database");
             e.printStackTrace();
         }
 

@@ -47,7 +47,7 @@ public class WordDAO {
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("Error inserting source");
+            System.err.println("Error inserting word");
             e.printStackTrace();
         }
         return false;
@@ -61,7 +61,7 @@ public class WordDAO {
     public List<Word> getAll() {
         List<Word> wordList = new ArrayList<>();
 
-        String sql = "SELECT word, total_count, start_count, end_count, uppercase_count, title_count FROM sources";
+        String sql = "SELECT word, total_count, start_count, end_count, uppercase_count, title_count FROM words";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
         try (Connection conn = DBConnection.getConnection();
@@ -84,7 +84,7 @@ public class WordDAO {
             }
 
         } catch (SQLException e) {
-            System.err.println("Error retrieving all sources from the database");
+            System.err.println("Error retrieving all words from the database");
             e.printStackTrace();
         }
 
