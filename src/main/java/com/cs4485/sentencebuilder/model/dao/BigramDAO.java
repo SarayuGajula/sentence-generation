@@ -86,7 +86,7 @@ public class BigramDAO {
         return bigramList;
     }
 
-    public List<Bigram> getTopKMostCommonBigramsStartingWithWord(int k, Word word) {
+    public List<Bigram> getTopKMostCommonBigramsStartingWithWord(int k, String word) {
         List<Bigram> bigramList = new ArrayList<>();
 
         String sql = "SELECT TOP ? first_word, second_word, count FROM Bigrams WHERE first_word = ?;";
@@ -96,7 +96,7 @@ public class BigramDAO {
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
             preparedStatement.setInt(1, k);
-            preparedStatement.setString(2, word.getWord());
+            preparedStatement.setString(2, word);
 
             // try-catch automatically closes the ResultSet and handles any errors
             try (ResultSet rs = preparedStatement.executeQuery()) {
@@ -106,7 +106,7 @@ public class BigramDAO {
                     String secondWord = rs.getString("second_word");
                     int count = rs.getInt("count");
 
-                    Bigram bigram = new Bigram(word.getWord(), secondWord, count);
+                    Bigram bigram = new Bigram(word, secondWord, count);
 
                     bigramList.add(bigram);
                 }
