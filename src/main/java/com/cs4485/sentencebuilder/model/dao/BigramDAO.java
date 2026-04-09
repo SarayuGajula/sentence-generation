@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Data Access Object for the Bigram entity.
@@ -17,8 +18,29 @@ import java.util.List;
  * @author Daniel Dimitrov
  * 02/14/2026 - Initial creation
  * 04/01/2026 - Added getTopKMostCommonBigramsStartingWithWord
+ * 04/09/2026 - Added connectionProvider and constructors for testing
+ * 04/09/2026 - Added comment for getTopKMostCommonBigramsStartingWithWord and fixed SQL statement
  */
 public class BigramDAO {
+
+    // A function that supplies connections, can either supply the real DBConnection for prod, or a custom connection for testing
+    private final Supplier<Connection> connectionProvider;
+
+    /**
+     * Production Constructor:
+     * Defaults to the real DBConnection.
+     */
+    public BigramDAO() {
+        this.connectionProvider = DBConnection::getConnection;
+    }
+
+    /**
+     * Testing Constructor:
+     * Accepts a custom way to generate connections (like the H2 database used in JUnit tests).
+     */
+    public BigramDAO(Supplier<Connection> connectionProvider) {
+        this.connectionProvider = connectionProvider;
+    }
 
     /**
      * Inserts a new Bigram into the database.
@@ -30,7 +52,7 @@ public class BigramDAO {
         String sql = "INSERT INTO bigrams (first_word, second_word, count) VALUES (?, ?, ?)";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
             // Get parameters from Bigram entity
@@ -62,7 +84,7 @@ public class BigramDAO {
         String sql = "SELECT first_word, second_word, count FROM bigrams";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql);
              ResultSet rs = preparedStatement.executeQuery()) {
 
@@ -86,13 +108,20 @@ public class BigramDAO {
         return bigramList;
     }
 
+    /**
+     * Retrieves a list of the top K most frequently occurring bigrams that begin with a specific word.
+     *
+     * @param k    The maximum number of bigram records to return (e.g., 5 for the top 5 most common).
+     * @param word The starting word (first word) to filter the bigrams by.
+     * @return A List of the top K Bigram entities starting with the word parameter
+     */
     public List<Bigram> getTopKMostCommonBigramsStartingWithWord(int k, String word) {
         List<Bigram> bigramList = new ArrayList<>();
 
-        String sql = "SELECT TOP ? first_word, second_word, count FROM Bigrams WHERE first_word = ?;";
+        String sql = "SELECT TOP ? first_word, second_word, count FROM Bigrams WHERE first_word = ? ORDER BY count DESC;";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
             preparedStatement.setInt(1, k);

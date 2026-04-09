@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Data Access Object for the Source entity.
@@ -16,8 +17,28 @@ import java.util.List;
  * @author Daniel Dimitrov
  * 02/11/2026 - Initial creation
  * 02/14/2026 - Minor fixes
+ * 04/09/2026 - Added connectionProvider and constructors for testing
  */
 public class SourceDAO {
+
+    // A function that supplies connections, can either supply the real DBConnection for prod, or a custom connection for testing
+    private final Supplier<Connection> connectionProvider;
+
+    /**
+     * Production Constructor:
+     * Defaults to the real DBConnection.
+     */
+    public SourceDAO() {
+        this.connectionProvider = DBConnection::getConnection;
+    }
+
+    /**
+     * Testing Constructor:
+     * Accepts a custom way to generate connections (like the H2 database used in JUnit tests).
+     */
+    public SourceDAO(Supplier<Connection> connectionProvider) {
+        this.connectionProvider = connectionProvider;
+    }
 
     /**
      * Inserts a new Source into the database.
@@ -29,7 +50,7 @@ public class SourceDAO {
         String sql = "INSERT INTO sources (filename, word_count) VALUES (?, ?)";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
             // Get parameters from Source entity
@@ -60,7 +81,7 @@ public class SourceDAO {
         String sql = "SELECT id, filename, word_count FROM sources";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql);
              ResultSet rs = preparedStatement.executeQuery()) {
 

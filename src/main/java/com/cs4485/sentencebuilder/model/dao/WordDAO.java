@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Data Access Object for the Word entity.
@@ -16,8 +17,28 @@ import java.util.List;
  * @author Daniel Dimitrov
  * 02/14/2026 - Initial creation
  * 03/31/2026 - Updated for newly added uppercase and title counts
+ * 04/09/2026 - Added connectionProvider and constructors for testing
  */
 public class WordDAO {
+
+    // A function that supplies connections, can either supply the real DBConnection for prod, or a custom connection for testing
+    private final Supplier<Connection> connectionProvider;
+
+    /**
+     * Production Constructor:
+     * Defaults to the real DBConnection.
+     */
+    public WordDAO() {
+        this.connectionProvider = DBConnection::getConnection;
+    }
+
+    /**
+     * Testing Constructor:
+     * Accepts a custom way to generate connections (like the H2 database used in JUnit tests).
+     */
+    public WordDAO(Supplier<Connection> connectionProvider) {
+        this.connectionProvider = connectionProvider;
+    }
 
     /**
      * Inserts a new Word into the database.
@@ -29,7 +50,7 @@ public class WordDAO {
         String sql = "INSERT INTO words (word, total_count, start_count, end_count, uppercase_count, title_count) VALUES (?, ?, ?, ?, ?, ?)";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
             // Get parameters from Word entity
@@ -64,7 +85,7 @@ public class WordDAO {
         String sql = "SELECT word, total_count, start_count, end_count, uppercase_count, title_count FROM words";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql);
              ResultSet rs = preparedStatement.executeQuery()) {
 
