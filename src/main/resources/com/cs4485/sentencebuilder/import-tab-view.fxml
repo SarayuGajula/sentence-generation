@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- UI for the import tab
+@author Connor Harris
+@author Daniel Dimitrov
+4/2/2026 - Initial version implemented. - Connor Harris
+4/10/2026 - Extracted from Connor's main-view.fxml into a separate view - Daniel Dimitrov
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.cs4485.sentencebuilder.controller.ImportTabController"
+            prefHeight="400.0" prefWidth="600.0">
+
+    <VBox spacing="12">
+        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
+
+        <Label text="Select a .txt file to import into the database:"/>
+
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <TextField fx:id="filePathField" promptText="File path..." HBox.hgrow="ALWAYS"/>
+            <Button text="Browse…" onAction="#onBrowse" prefWidth="90"/>
+        </HBox>
+
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <Button text="Import File" onAction="#onImport" prefWidth="110"/>
+            <Label fx:id="importStatus" style="-fx-text-fill: gray;"/>
+        </HBox>
+
+        <Separator/>
+        <Label text="Imported Files:" style="-fx-font-weight: bold;"/>
+
+        <TableView fx:id="importedFilesTable" VBox.vgrow="ALWAYS">
+            <columns>
+                <TableColumn fx:id="fileNameCol"   text="File Name"   prefWidth="300"/>
+                <TableColumn fx:id="wordCountCol"  text="Word Count"  prefWidth="120"/>
+                <TableColumn fx:id="importDateCol" text="Imported At" prefWidth="200"/>
+            </columns>
+            <placeholder><Label text="No files imported yet."/></placeholder>
+        </TableView>
+    </VBox>
+
+</AnchorPane>

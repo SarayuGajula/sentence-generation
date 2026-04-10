@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- The UI 
-@author Connor Harris 
-4/2/2026 - Initial version implemented.-->
+@author Connor Harris
+@author Daniel Dimitrov
+4/2/2026 - Initial version implemented. - Connor Harris
+4/10/2026 - Extracted tabs into separate views - Daniel Dimitrov
+-->
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
 
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.cs4485.sentencebuilder.MainController"
@@ -20,119 +22,27 @@
 
             <!-- IMPORT TAB -->
             <Tab text="Import">
-                <VBox spacing="12">
-                    <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-
-                    <Label text="Select a .txt file to import into the database:"/>
-
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <TextField fx:id="filePathField" promptText="File path..." HBox.hgrow="ALWAYS"/>
-                        <Button text="Browse…" onAction="#onBrowse" prefWidth="90"/>
-                    </HBox>
-
-                    <HBox spacing="8" alignment="CENTER_LEFT">
-                        <Button text="Import File" onAction="#onImport" prefWidth="110"/>
-                        <Label fx:id="importStatus" style="-fx-text-fill: gray;"/>
-                    </HBox>
-
-                    <Separator/>
-                    <Label text="Imported Files:" style="-fx-font-weight: bold;"/>
-
-                    <TableView fx:id="importedFilesTable" VBox.vgrow="ALWAYS">
-                        <columns>
-                            <TableColumn fx:id="fileNameCol"   text="File Name"   prefWidth="300"/>
-                            <TableColumn fx:id="wordCountCol"  text="Word Count"  prefWidth="120"/>
-                            <TableColumn fx:id="importDateCol" text="Imported At" prefWidth="200"/>
-                        </columns>
-                        <placeholder><Label text="No files imported yet."/></placeholder>
-                    </TableView>
-                </VBox>
+                <fx:include source="import-tab-view.fxml"/>
             </Tab>
 
             <!-- GENERATE TAB -->
             <Tab text="Generate">
-                <VBox spacing="12">
-                    <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-
-                    <Label text="Generate a sentence from a starting word:"/>
-
-                    <HBox spacing="12" alignment="CENTER_LEFT">
-                        <Label text="Starting word:"/>
-                        <TextField fx:id="startWordField" promptText="e.g. The" prefWidth="200"/>
-                    </HBox>
-
-                    <HBox spacing="12" alignment="CENTER_LEFT">
-                        <Label text="Algorithm:"/>
-                        <ComboBox fx:id="algorithmCombo" prefWidth="220"/>
-                    </HBox>
-
-                    <Button text="Generate Sentence" onAction="#onGenerate" prefWidth="150"/>
-
-                    <Separator/>
-                    <Label text="Output:" style="-fx-font-weight: bold;"/>
-                    <TextArea fx:id="generatedOutput" prefHeight="180" editable="false" wrapText="true"
-                              promptText="Generated sentence will appear here…"/>
-                </VBox>
+                <fx:include source="generate-tab-view.fxml"/>
             </Tab>
 
             <!-- AUTO-COMPLETE TAB -->
             <Tab text="Auto-Complete">
-                <VBox spacing="12">
-                    <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-
-                    <Label text="Type a sentence — press Space after each word to see next-word suggestions:"/>
-                    <TextArea fx:id="autocompleteInput" prefHeight="100" wrapText="true"
-                              promptText="Start typing here…"/>
-
-                    <Label text="Suggestions for next word:" style="-fx-font-weight: bold;"/>
-                    <ListView fx:id="suggestionsList" prefHeight="160"/>
-
-                    <HBox spacing="8">
-                        <Button text="Use Selected Word" onAction="#onUseSuggestion" prefWidth="150"/>
-                        <Button text="Clear" onAction="#onClearAutocomplete" prefWidth="80"/>
-                    </HBox>
-                </VBox>
+                <fx:include source="auto-complete-tab-view.fxml"/>
             </Tab>
 
             <!-- WORDS TAB -->
             <Tab text="Words">
-                <VBox spacing="12">
-                    <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-
-                    <HBox spacing="12" alignment="CENTER_LEFT">
-                        <Label text="Sort by:"/>
-                        <ComboBox fx:id="wordSortCombo" prefWidth="220" onAction="#onSortWords"/>
-                        <Button text="Refresh" onAction="#onRefreshWords" prefWidth="80"/>
-                    </HBox>
-
-                    <TableView fx:id="wordsTable" VBox.vgrow="ALWAYS">
-                        <columns>
-                            <TableColumn fx:id="wordCol"       text="Word"           prefWidth="200"/>
-                            <TableColumn fx:id="totalCountCol" text="Total Count"    prefWidth="120"/>
-                            <TableColumn fx:id="startCountCol" text="Sentence Start" prefWidth="130"/>
-                            <TableColumn fx:id="endCountCol"   text="Sentence End"   prefWidth="130"/>
-                        </columns>
-                        <placeholder><Label text="No words loaded. Import a file first."/></placeholder>
-                    </TableView>
-                </VBox>
+                <fx:include source="words-tab-view.fxml"/>
             </Tab>
 
             <!-- REPORTS TAB -->
             <Tab text="Reports">
-                <VBox spacing="12">
-                    <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-
-                    <Label text="Generated Sentences History:" style="-fx-font-weight: bold;"/>
-
-                    <TableView fx:id="sentencesTable" VBox.vgrow="ALWAYS">
-                        <columns>
-                            <TableColumn fx:id="sentenceCol"     text="Sentence"      prefWidth="480"/>
-                            <TableColumn fx:id="sentenceAlgoCol" text="Algorithm"     prefWidth="160"/>
-                            <TableColumn fx:id="sentenceDateCol" text="Generated At"  prefWidth="180"/>
-                        </columns>
-                        <placeholder><Label text="No sentences generated yet."/></placeholder>
-                    </TableView>
-                </VBox>
+                <fx:include source="reports-tab-view.fxml"/>
             </Tab>
 
         </TabPane>
