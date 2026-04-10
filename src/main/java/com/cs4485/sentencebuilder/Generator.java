@@ -29,7 +29,7 @@ public class Generator {
         while(!word.matches(punctRegex) && count < 50){
             if(!word.equals(first)){ sb.append(" ").append(word); }
 
-            Bigram commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word).get(0);
+            Bigram commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word).getFirst();
             word = commonBigram.getSecondWord();
             count++;
 
