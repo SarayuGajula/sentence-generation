@@ -11,13 +11,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests the WordDAO
  * @author Daniel Dimitrov
  * 04/09/2026 - Initial creation
+ * 04/10/2026 - Added tests for single word retrieval
  */
 public class WordDAOTest {
 
@@ -92,5 +92,32 @@ public class WordDAOTest {
         boolean containsQuick = results.stream()
                 .anyMatch(w -> w.getWord().equals("quick"));
         assertTrue(containsQuick, "The list should contain the word 'quick'");
+    }
+
+    /**
+     * Tests getting a single existing word from DB
+     */
+    @Test
+    public void testGet_ReturnsInsertedWord() {
+        wordDao.insert(new Word("the", 500, 100, 0, 10, 90));
+        Word expectedResult = new Word("quick", 50, 5, 5, 0, 5);
+        wordDao.insert(expectedResult);
+
+        Word result = wordDao.get("quick");
+
+        assertEquals(result, expectedResult, "Retrieved word should match inserted word exactly");
+    }
+
+    /**
+     * Tests getting a single non-existent word from DB
+     */
+    @Test
+    public void testGet_ReturnsNullIfNotFound() {
+        wordDao.insert(new Word("the", 500, 100, 0, 10, 90));
+        wordDao.insert(new Word("quick", 50, 5, 5, 0, 5));
+
+        Word result = wordDao.get("brown");
+
+        assertNull(result, "No word should be retrieved");
     }
 }

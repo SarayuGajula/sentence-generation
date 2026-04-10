@@ -18,6 +18,7 @@ import java.util.function.Supplier;
  * 02/14/2026 - Initial creation
  * 03/31/2026 - Updated for newly added uppercase and title counts
  * 04/09/2026 - Added connectionProvider and constructors for testing
+ * 04/10/2026 - Added get function to retrieve single word
  */
 public class WordDAO {
 
@@ -110,5 +111,44 @@ public class WordDAO {
         }
 
         return wordList;
+    }
+
+    /**
+     * Retrieves the word matching the parameter from the database.
+     * @param word The word to retrieve
+     * @return Word if found, null otherwise
+     */
+    public Word get(String word) {
+        String sql = "SELECT total_count, start_count, end_count, uppercase_count, title_count FROM words where word = ?";
+        Word retrievedWord = null;
+
+        // try-catch automatically closes the PreparedStatement and handles any errors
+        try (Connection conn = connectionProvider.get();
+             PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
+
+            preparedStatement.setString(1, word);
+
+            // try-catch automatically closes the ResultSet and handles any errors
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+
+                // Check if there's a result
+                if (rs.next()) {
+                    // Store parameters in temporary variables
+                    int totalCount = rs.getInt("total_count");
+                    int startCount = rs.getInt("start_count");
+                    int endCount = rs.getInt("end_count");
+                    int uppercaseCount = rs.getInt("uppercase_count");
+                    int titleCount = rs.getInt("title_count");
+
+                    retrievedWord = new Word(word, totalCount, startCount, endCount, uppercaseCount, titleCount);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error retrieving word from the database");
+            e.printStackTrace();
+        }
+
+        return retrievedWord;
     }
 }

@@ -1,10 +1,13 @@
 package com.cs4485.sentencebuilder.model.entity;
 
+import java.util.Objects;
+
 /**
  * Represents a Word entity in the application and maps directly to the 'words' table in the database.
  * @author Daniel Dimitrov
  * 03/14/2026 - Initial creation
  * 03/31/2026 - Added uppercase and title counts, as well as negative checks and exceptions for all count settings
+ * 04/10/2026 - Added equals function
  */
 public class Word {
 
@@ -81,5 +84,12 @@ public class Word {
             throw new IllegalArgumentException("Word title count cannot be negative");
         }
         this.titleCount = titleCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Word word1 = (Word) o;
+        return totalCount == word1.totalCount && startCount == word1.startCount && endCount == word1.endCount && uppercaseCount == word1.uppercaseCount && titleCount == word1.titleCount && Objects.equals(word, word1.word);
     }
 }
