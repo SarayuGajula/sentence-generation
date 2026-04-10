@@ -44,7 +44,7 @@ public class WordAnalyzer {
             else if(words.get(i-1).matches(endPunctRegex)) { startCount = 1; }
             if(word.matches(endPunctRegex)){ endCount = 1; }
             if(token.toUpperCase().equals(rawWord)) {uppercaseCount = 1; }
-            if((Character.toUpperCase(token.charAt(0)) + token.substring(1, token.length())).equals(rawWord)) { titleCount = 1; }
+            if((Character.toUpperCase(token.charAt(0)) + token.substring(1)).equals(rawWord)) { titleCount = 1; }
             // what would capitalization do if the char doesn't have a capitalized version?
 
             // if word is not in list, initialize
