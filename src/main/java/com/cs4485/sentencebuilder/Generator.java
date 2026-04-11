@@ -32,7 +32,7 @@ public class Generator {
         while(!word.matches(punctRegex) && count < 50){
             if(!word.equals(first)){ sb.append(" ").append(word); }
 
-            Bigram commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word).getFirst();
+            Bigram commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word.toLowerCase()).getFirst();
             word = checkCapitalization(commonBigram.getSecondWord());
             count++;
 
@@ -51,7 +51,7 @@ public class Generator {
         while(!word.matches(punctRegex) && count < 50){
             if(!word.equals(first)){ sb.append(" ").append(word); }
 
-            List<Bigram> commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(5, word);
+            List<Bigram> commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(5, word.toLowerCase());
             int index = -1;
             List<Integer> countList = new ArrayList<>();
             int totalCount = 0;
