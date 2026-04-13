@@ -87,7 +87,7 @@ public class Generator {
     private static String checkCapitalization(String str){
         Word word = wordDAO.get(str);
         String strCopy = str;
-        int wordCount = word.getTotalCount()
+        int wordCount = word.getTotalCount();
         if(word.getUppercaseCount() == wordCount){ // all previous instances are all uppercase
             strCopy = str.toUpperCase();
         }
