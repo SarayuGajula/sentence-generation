@@ -4,13 +4,12 @@
 @author Daniel Dimitrov
 4/2/2026 - Initial version implemented. - Connor Harris
 4/10/2026 - Extracted from Connor's main-view.fxml into a separate view - Daniel Dimitrov
+4/16/2026 - Added a hint, removed sort selection, moved refresh button to bottom right, added table text alignment, added new table columns - Daniel Dimitrov
 -->
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
@@ -18,23 +17,25 @@
             prefHeight="400.0" prefWidth="600.0">
 
     <VBox spacing="12">
-        <padding><Insets top="14" right="14" bottom="14" left="14"/></padding>
-
-        <HBox spacing="12" alignment="CENTER_LEFT">
-            <Label text="Sort by:"/>
-            <ComboBox fx:id="wordSortCombo" prefWidth="220" onAction="#onSortWords"/>
-            <Button text="Refresh" onAction="#onRefreshWords" prefWidth="80"/>
-        </HBox>
+        <padding><Insets top="14" right="14" bottom="14" left="14" /></padding>
 
         <TableView fx:id="wordsTable" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="wordCol"       text="Word"           prefWidth="200"/>
-                <TableColumn fx:id="totalCountCol" text="Total Count"    prefWidth="120"/>
-                <TableColumn fx:id="startCountCol" text="Sentence Start" prefWidth="130"/>
-                <TableColumn fx:id="endCountCol"   text="Sentence End"   prefWidth="130"/>
+                <TableColumn fx:id="wordCol" prefWidth="200" style="-fx-alignment: CENTER-LEFT;" text="Word" />
+                <TableColumn fx:id="totalCountCol" prefWidth="120" style="-fx-alignment: CENTER-RIGHT;" text="Total Count" />
+                <TableColumn fx:id="startCountCol" prefWidth="130" style="-fx-alignment: CENTER-RIGHT;" text="Sentence Start" />
+                <TableColumn fx:id="endCountCol" prefWidth="130" style="-fx-alignment: CENTER-RIGHT;" text="Sentence End" />
+                <TableColumn fx:id="uppercaseCountCol" prefWidth="130" style="-fx-alignment: CENTER-RIGHT;" text="Uppercase" />
+                <TableColumn fx:id="titleCountCol" prefWidth="130" style="-fx-alignment: CENTER-RIGHT;" text="Titlecase" />
             </columns>
-            <placeholder><Label text="No words loaded. Import a file first."/></placeholder>
+            <placeholder><Label text="No words loaded. Import a file first." /></placeholder>
         </TableView>
+
+        <HBox>
+            <Label text="Hint: You can double-click any column in order to sort by its attribute" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button onAction="#onRefreshWords" prefWidth="80" text="Refresh" />
+        </HBox>
     </VBox>
 
 </AnchorPane>
