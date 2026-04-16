@@ -8,6 +8,7 @@ package com.cs4485.sentencebuilder;
  * @author Joe Su
  * 04/02/2026 - Initial creation, needs update for capitalization and probabilities - Joe
  * 04/10/2026 - Added capitalization and selection based on probability - Joe
+ * 4/16/2026 - Updates to add initializing with DAO's for testing - Joe
  */
 
 import java.util.ArrayList;
@@ -21,28 +22,52 @@ import com.cs4485.sentencebuilder.model.dao.BigramDAO;
 
 public class Generator {
 
-    static BigramDAO bigramDAO = new BigramDAO();
-    static WordDAO wordDAO = new WordDAO();
     static final String punctRegex = "[.!?;]+";
 
-    public static String commonGenerator(String first){
-        StringBuilder sb = new StringBuilder(first);
+    private final WordDAO wordDAO;
+    private final BigramDAO bigramDAO;
+
+    /**
+     * Production Constructor:
+     * Defaults to the real database
+     */
+    public Generator() {
+        this.wordDAO = new WordDAO();
+        this.bigramDAO = new BigramDAO();
+    }
+
+    /**
+     * Testing Constructor:
+     * Accepts a custom way to reach database
+     */
+    public Generator(WordDAO wordDAO, BigramDAO bigramDAO) {
+        this.wordDAO = wordDAO;
+        this.bigramDAO = bigramDAO;
+    }
+
+    public String commonGenerator(String first){
+        StringBuilder sb = new StringBuilder();
+        sb.append(first);
         String word = first.toLowerCase().replaceAll(punctRegex + "$", ""); // word to display next
         int count = 0; // for debugging
+
         while(!word.matches(punctRegex) && count < 50){
-            if(!word.equals(first)){ sb.append(" ").append(word); }
 
             Bigram commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word.toLowerCase()).getFirst();
-            word = checkCapitalization(commonBigram.getSecondWord());
-            count++;
+            String next = checkCapitalization(commonBigram.getSecondWord());
 
+            if(next.equalsIgnoreCase(word)){ break; } // prevents self-loop
+            if(next == null || next.isEmpty()){ break; }
+
+            sb.append(" ").append(next);
+            word = next.toLowerCase().replaceAll(punctRegex + "$", "");
+            count++;
         }
-        sb.append(word);
 
         return sb.toString();
     }
 
-    public static String topFiveWordsGenerator(String first){
+    public String topFiveWordsGenerator(String first){
         StringBuilder sb = new StringBuilder(first);
         String word = first.toLowerCase().replaceAll(punctRegex + "$", ""); // word to display next
         int count = 0; // for debugging
@@ -76,7 +101,13 @@ public class Generator {
                 throw new Error("Probability selection failed!");
             }
 
-            word = checkCapitalization(commonBigram.get(index).getSecondWord());
+            String next = checkCapitalization(commonBigram.get(index).getSecondWord());
+            if(next.equalsIgnoreCase(word)){ break; } // prevents self-loop
+            if(next == null || next.isEmpty()){ break; }
+
+            sb.append(" ").append(next);
+
+            word = next.toLowerCase().replaceAll(punctRegex + "$", "");
             count++;
         }
         sb.append(word);
@@ -84,7 +115,7 @@ public class Generator {
         return sb.toString();
     }
 
-    private static String checkCapitalization(String str){
+    private String checkCapitalization(String str){
         Word word = wordDAO.get(str);
         String strCopy = str;
         int wordCount = word.getTotalCount();
@@ -92,7 +123,7 @@ public class Generator {
             strCopy = str.toUpperCase();
         }
         else if(word.getTitleCount() == wordCount){ // all previous instances are all titlecase
-            strCopy = Character.getName(str.charAt(0)) + str.substring(1);
+            strCopy = Character.toUpperCase(str.charAt(0)) + str.substring(1);
         }
         return strCopy;
     }

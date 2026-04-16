@@ -33,6 +33,8 @@ public class WordAnalyzer {
             String word = words.get(i);
             // first word is a starting word
             String rawWord = word.replaceAll(punctRegex + "$", ""); // get rid of ending punctuation, used for capitalization counts
+            if(rawWord.isEmpty()) { continue; }
+
             String token = rawWord.toLowerCase(); // get rid of capitalization
             int startCount = 0;
             int endCount = 0;
