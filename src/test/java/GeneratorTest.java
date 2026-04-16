@@ -100,7 +100,7 @@ public class GeneratorTest {
 
     @Test
     public void testCommonGenerator(){
-        int avgLen = 0;
+        double avgLen = 0.0;
         for(String input: inputWords){
             String output = gen.commonGenerator(input);
             int len = output.split("\\s+").length;
@@ -115,7 +115,7 @@ public class GeneratorTest {
 
     @Test
     public void testTopFiveGenerator(){
-        int avgLen = 0;
+        double avgLen = 0.0;
         for(String input: inputWords){
             String output = gen.topFiveWordsGenerator(input);
             int len = output.split("\\s+").length;

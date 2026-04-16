@@ -52,7 +52,6 @@ public class Generator {
         int count = 0; // for debugging
 
         while(!word.matches(punctRegex) && count < 50){
-
             List<Bigram> bigrams = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word.toLowerCase());
             if(bigrams == null || bigrams.isEmpty()){ break; }
             Bigram commonBigram = bigrams.get(0);
@@ -61,7 +60,7 @@ public class Generator {
             if(next.equalsIgnoreCase(word)){ break; } // prevents self-loop
             if(next == null || next.isEmpty()){ break; }
             if(next.matches(punctRegex)){
-                sb.append(next);
+                sb.append(next);;
                 break;
             }
 
@@ -81,12 +80,9 @@ public class Generator {
         Random r = new Random();
 
         while(!word.matches(punctRegex) && count < 50){
-            if(!word.equals(first)){ sb.append(" ").append(word); }
-
             List<Bigram> bigrams = bigramDAO.getTopKMostCommonBigramsStartingWithWord(5, word.toLowerCase());
             if(bigrams == null || bigrams.isEmpty()){ break; }
 
-            int index = -1;
             List<Integer> countList = new ArrayList<>();
             int totalCount = 0;
             for(Bigram bigram : bigrams){
@@ -94,6 +90,9 @@ public class Generator {
                 totalCount += bigram.getCount();
             }
 
+            if(totalCount <= 0){ break; }
+
+            int index = -1;
             int prob = r.nextInt(totalCount);
             int thresh = 0;
 
@@ -106,7 +105,7 @@ public class Generator {
                 }
             }
 
-            if(thresh >= totalCount || index == -1){
+            if(thresh > totalCount || index == -1){
                 throw new Error("Probability selection failed!");
             }
 
@@ -123,7 +122,6 @@ public class Generator {
             word = next.toLowerCase().replaceAll(punctRegex + "$", "");
             count++;
         }
-        sb.append(word);
 
         return sb.toString();
     }
