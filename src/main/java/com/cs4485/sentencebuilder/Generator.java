@@ -53,13 +53,20 @@ public class Generator {
 
         while(!word.matches(punctRegex) && count < 50){
 
-            Bigram commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word.toLowerCase()).getFirst();
+            List<Bigram> bigrams = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word.toLowerCase());
+            if(bigrams == null || bigrams.isEmpty()){ break; }
+            Bigram commonBigram = bigrams.get(0);
             String next = checkCapitalization(commonBigram.getSecondWord());
 
             if(next.equalsIgnoreCase(word)){ break; } // prevents self-loop
             if(next == null || next.isEmpty()){ break; }
+            if(next.matches(punctRegex)){
+                sb.append(next);
+                break;
+            }
 
             sb.append(" ").append(next);
+
             word = next.toLowerCase().replaceAll(punctRegex + "$", "");
             count++;
         }
@@ -76,11 +83,13 @@ public class Generator {
         while(!word.matches(punctRegex) && count < 50){
             if(!word.equals(first)){ sb.append(" ").append(word); }
 
-            List<Bigram> commonBigram = bigramDAO.getTopKMostCommonBigramsStartingWithWord(5, word.toLowerCase());
+            List<Bigram> bigrams = bigramDAO.getTopKMostCommonBigramsStartingWithWord(5, word.toLowerCase());
+            if(bigrams == null || bigrams.isEmpty()){ break; }
+
             int index = -1;
             List<Integer> countList = new ArrayList<>();
             int totalCount = 0;
-            for(Bigram bigram : commonBigram){
+            for(Bigram bigram : bigrams){
                 countList.add(bigram.getCount());
                 totalCount += bigram.getCount();
             }
@@ -101,9 +110,13 @@ public class Generator {
                 throw new Error("Probability selection failed!");
             }
 
-            String next = checkCapitalization(commonBigram.get(index).getSecondWord());
+            String next = checkCapitalization(bigrams.get(index).getSecondWord());
             if(next.equalsIgnoreCase(word)){ break; } // prevents self-loop
             if(next == null || next.isEmpty()){ break; }
+            if(next.matches(punctRegex)){
+                sb.append(next);
+                break;
+            }
 
             sb.append(" ").append(next);
 
