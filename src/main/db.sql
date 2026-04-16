@@ -17,7 +17,7 @@ CREATE TABLE words (
     uppercase_count int NOT NULL,
     title_count int NOT NULL
 );
-``
+
 CREATE TABLE bigrams (
     first_word varchar(255) NOT NULL,
     second_word varchar(255) NOT NULL,
