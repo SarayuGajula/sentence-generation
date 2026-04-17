@@ -20,6 +20,7 @@ import java.util.function.Supplier;
  * 04/01/2026 - Added getTopKMostCommonBigramsStartingWithWord
  * 04/09/2026 - Added connectionProvider and constructors for testing
  * 04/09/2026 - Added comment for getTopKMostCommonBigramsStartingWithWord and fixed SQL statement
+ * 04/17/2026 - Small fix in query for getTopKMostCommonBigramsStartingWithWord
  */
 public class BigramDAO {
 
@@ -118,14 +119,14 @@ public class BigramDAO {
     public List<Bigram> getTopKMostCommonBigramsStartingWithWord(int k, String word) {
         List<Bigram> bigramList = new ArrayList<>();
 
-        String sql = "SELECT TOP ? first_word, second_word, count FROM Bigrams WHERE first_word = ? ORDER BY count DESC;";
+        String sql = "SELECT first_word, second_word, count FROM Bigrams WHERE first_word = ? ORDER BY count DESC LIMIT ?;";
 
         // try-catch automatically closes the PreparedStatement and handles any errors
         try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
-            preparedStatement.setInt(1, k);
-            preparedStatement.setString(2, word);
+            preparedStatement.setString(1, word);
+            preparedStatement.setInt(2, k);
 
             // try-catch automatically closes the ResultSet and handles any errors
             try (ResultSet rs = preparedStatement.executeQuery()) {
