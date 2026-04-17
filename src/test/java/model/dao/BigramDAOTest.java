@@ -25,7 +25,7 @@ public class BigramDAOTest {
 
     // DB_CLOSE_DELAY=-1 keeps the DB alive during the tests.
     // INIT=RUNSCRIPT executes the schema.sql file that creates all the tables!
-    private final String H2_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'";
+    private final String H2_URL = "jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'";
     private final String H2_USER = "sa";
     private final String H2_PASSWORD = "";
 
@@ -55,10 +55,10 @@ public class BigramDAOTest {
      * Tests adding a bigram to the DB
      */
     @Test
-    public void testInsert_AddsBigramSuccessfully() {
+    public void testInsertOrUpdate_AddsBigramSuccessfully() {
         Bigram newBigram = new Bigram("hello", "world", 5);
 
-        boolean result = bigramDao.insert(newBigram);
+        boolean result = bigramDao.insertOrUpdate(newBigram);
 
         assertTrue(result, "Insert should return true on success");
 
@@ -75,8 +75,8 @@ public class BigramDAOTest {
      */
     @Test
     public void testGetAll_ReturnsAllInsertedBigrams() {
-        bigramDao.insert(new Bigram("data", "science", 10));
-        bigramDao.insert(new Bigram("machine", "learning", 20));
+        bigramDao.insertOrUpdate(new Bigram("data", "science", 10));
+        bigramDao.insertOrUpdate(new Bigram("machine", "learning", 20));
 
         List<Bigram> results = bigramDao.getAll();
 
@@ -88,10 +88,10 @@ public class BigramDAOTest {
      */
     @Test
     public void testGetTopKMostCommonBigrams_FiltersAndLimitsCorrectly() {
-        bigramDao.insert(new Bigram("apple", "pie", 50));
-        bigramDao.insert(new Bigram("apple", "tree", 100)); // Highest count
-        bigramDao.insert(new Bigram("apple", "juice", 10));
-        bigramDao.insert(new Bigram("banana", "split", 500)); // Different first word
+        bigramDao.insertOrUpdate(new Bigram("apple", "pie", 50));
+        bigramDao.insertOrUpdate(new Bigram("apple", "tree", 100)); // Highest count
+        bigramDao.insertOrUpdate(new Bigram("apple", "juice", 10));
+        bigramDao.insertOrUpdate(new Bigram("banana", "split", 500)); // Different first word
 
         List<Bigram> results = bigramDao.getTopKMostCommonBigramsStartingWithWord(2, "apple");
 
@@ -101,5 +101,28 @@ public class BigramDAOTest {
         for (Bigram b : results) {
             assertEquals("apple", b.getFirstWord(), "First word must be 'apple'");
         }
+    }
+
+    /**
+     * Tests that inserting an existing bigram updates its count
+     * instead of creating a duplicate entry.
+     */
+    @Test
+    public void testInsertOrUpdate_UpdatesExistingBigramSuccessfully() {
+        Bigram initialBigram = new Bigram("hello", "world", 10);
+        bigramDao.insertOrUpdate(initialBigram);
+
+        Bigram updateBigram = new Bigram("hello", "world", 5);
+        boolean result = bigramDao.insertOrUpdate(updateBigram);
+
+        assertTrue(result, "InsertOrUpdate should return true on successful update");
+
+        List<Bigram> allBigrams = bigramDao.getAll();
+        assertEquals(1, allBigrams.size(), "There should still be exactly 1 bigram in the database");
+
+        Bigram savedBigram = allBigrams.getFirst();
+        assertEquals("hello", savedBigram.getFirstWord());
+        assertEquals("world", savedBigram.getSecondWord());
+        assertEquals(15, savedBigram.getCount(), "Count should be 10 + 5");
     }
 }

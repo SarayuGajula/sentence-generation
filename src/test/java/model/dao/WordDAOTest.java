@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * @author Daniel Dimitrov
  * 04/09/2026 - Initial creation
  * 04/10/2026 - Added tests for single word retrieval
+ * 04/17/2026 - Added update test for insertOrUpdate
  */
 public class WordDAOTest {
 
@@ -25,7 +26,7 @@ public class WordDAOTest {
 
     // DB_CLOSE_DELAY=-1 keeps the DB alive during the tests.
     // INIT=RUNSCRIPT executes the schema.sql file that creates all the tables!
-    private final String H2_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'";
+    private final String H2_URL = "jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'";
     private final String H2_USER = "sa";
     private final String H2_PASSWORD = "";
 
@@ -55,13 +56,13 @@ public class WordDAOTest {
      * Tests adding a word to the DB
      */
     @Test
-    public void testInsert_AddsWordSuccessfully() {
+    public void testInsertOrUpdate_AddsWordSuccessfully() {
         // Create a word with specific counts to verify they all map correctly
         Word newWord = new Word("example", 100, 20, 15, 5, 10);
 
-        boolean result = wordDao.insert(newWord);
+        boolean result = wordDao.insertOrUpdate(newWord);
 
-        assertTrue(result, "Insert should return true on success");
+        assertTrue(result, "InsertOrUpdate should return true on success");
 
         // Verify it actually went into the database with all fields matching
         List<Word> allWords = wordDao.getAll();
@@ -81,9 +82,9 @@ public class WordDAOTest {
      */
     @Test
     public void testGetAll_ReturnsAllInsertedWords() {
-        wordDao.insert(new Word("the", 500, 100, 0, 10, 90));
-        wordDao.insert(new Word("quick", 50, 5, 5, 0, 5));
-        wordDao.insert(new Word("brown", 40, 2, 8, 0, 2));
+        wordDao.insertOrUpdate(new Word("the", 500, 100, 0, 10, 90));
+        wordDao.insertOrUpdate(new Word("quick", 50, 5, 5, 0, 5));
+        wordDao.insertOrUpdate(new Word("brown", 40, 2, 8, 0, 2));
 
         List<Word> results = wordDao.getAll();
 
@@ -99,9 +100,9 @@ public class WordDAOTest {
      */
     @Test
     public void testGet_ReturnsInsertedWord() {
-        wordDao.insert(new Word("the", 500, 100, 0, 10, 90));
+        wordDao.insertOrUpdate(new Word("the", 500, 100, 0, 10, 90));
         Word expectedResult = new Word("quick", 50, 5, 5, 0, 5);
-        wordDao.insert(expectedResult);
+        wordDao.insertOrUpdate(expectedResult);
 
         Word result = wordDao.get("quick");
 
@@ -113,11 +114,36 @@ public class WordDAOTest {
      */
     @Test
     public void testGet_ReturnsNullIfNotFound() {
-        wordDao.insert(new Word("the", 500, 100, 0, 10, 90));
-        wordDao.insert(new Word("quick", 50, 5, 5, 0, 5));
+        wordDao.insertOrUpdate(new Word("the", 500, 100, 0, 10, 90));
+        wordDao.insertOrUpdate(new Word("quick", 50, 5, 5, 0, 5));
 
         Word result = wordDao.get("brown");
 
         assertNull(result, "No word should be retrieved");
+    }
+
+    /**
+     * Tests that inserting an existing word updates its counts
+     */
+    @Test
+    public void testInsertOrUpdate_UpdatesExistingWordSuccessfully() {
+        Word initialWord = new Word("example", 100, 20, 15, 5, 10);
+        wordDao.insertOrUpdate(initialWord);
+
+        Word updateWord = new Word("example", 50, 10, 5, 2, 5);
+        boolean result = wordDao.insertOrUpdate(updateWord);
+
+        assertTrue(result, "InsertOrUpdate should return true on successful update");
+
+        List<Word> allWords = wordDao.getAll();
+        assertEquals(1, allWords.size(), "There should still be exactly 1 word in the database");
+
+        Word savedWord = allWords.getFirst();
+        assertEquals("example", savedWord.getWord());
+        assertEquals(150, savedWord.getTotalCount(), "Total count should be 100 + 50");
+        assertEquals(30, savedWord.getStartCount(), "Start count should be 20 + 10");
+        assertEquals(20, savedWord.getEndCount(), "End count should be 15 + 5");
+        assertEquals(7, savedWord.getUppercaseCount(), "Uppercase count should be 5 + 2");
+        assertEquals(15, savedWord.getTitleCount(), "Title count should be 10 + 5");
     }
 }

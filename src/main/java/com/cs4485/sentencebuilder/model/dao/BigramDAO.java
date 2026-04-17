@@ -21,6 +21,7 @@ import java.util.function.Supplier;
  * 04/09/2026 - Added connectionProvider and constructors for testing
  * 04/09/2026 - Added comment for getTopKMostCommonBigramsStartingWithWord and fixed SQL statement
  * 04/17/2026 - Small fix in query for getTopKMostCommonBigramsStartingWithWord
+ * 04/17/2026 - Changed insert function to update preexisting bigrams by summing old counts and new counts
  */
 public class BigramDAO {
 
@@ -44,34 +45,33 @@ public class BigramDAO {
     }
 
     /**
-     * Inserts a new Bigram into the database.
+     * Inserts a new Bigram or updates the count if it already exists.
      *
-     * @param bigram The Bigram entity containing the data to insert.
-     * @return true if the insertion was successful, false otherwise.
+     * @param bigram The Bigram entity containing the data.
+     * @return true if the operation was successful, false otherwise.
      */
-    public boolean insert(Bigram bigram) {
-        String sql = "INSERT INTO bigrams (first_word, second_word, count) VALUES (?, ?, ?)";
+    public boolean insertOrUpdate(Bigram bigram) {
+        String sql = "INSERT INTO bigrams (first_word, second_word, count) " +
+                "VALUES (?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE " +
+                "count = count + VALUES(count)";
 
-        // try-catch automatically closes the PreparedStatement and handles any errors
         try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
-            // Get parameters from Bigram entity
             preparedStatement.setString(1, bigram.getFirstWord());
             preparedStatement.setString(2, bigram.getSecondWord());
             preparedStatement.setInt(3, bigram.getCount());
 
-            // Insert bigram
             int rowsAffected = preparedStatement.executeUpdate();
-            // bigram successfully inserted if there are rows affected
-            if (rowsAffected > 0) {
-                return true;
-            }
+            return rowsAffected > 0;
+
         } catch (SQLException e) {
-            System.err.println("Error inserting bigram");
+            System.err.println("Error performing upsert for bigram: " +
+                    bigram.getFirstWord() + " " + bigram.getSecondWord());
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     /**

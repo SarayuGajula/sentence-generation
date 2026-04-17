@@ -19,6 +19,7 @@ import java.util.function.Supplier;
  * 03/31/2026 - Updated for newly added uppercase and title counts
  * 04/09/2026 - Added connectionProvider and constructors for testing
  * 04/10/2026 - Added get function to retrieve single word
+ * 04/17/2026 - Changed insert function to update preexisting words by summing old counts and new counts
  */
 public class WordDAO {
 
@@ -42,19 +43,24 @@ public class WordDAO {
     }
 
     /**
-     * Inserts a new Word into the database.
+     * Inserts a new Word or updates the counts if the word already exists.
      *
-     * @param word The Word entity containing the data to insert.
-     * @return true if the insertion was successful, false otherwise.
+     * @param word The Word entity containing the data.
+     * @return true if the operation was successful, false otherwise.
      */
-    public boolean insert(Word word) {
-        String sql = "INSERT INTO words (word, total_count, start_count, end_count, uppercase_count, title_count) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean insertOrUpdate(Word word) {
+        String sql = "INSERT INTO words (word, total_count, start_count, end_count, uppercase_count, title_count) " +
+                "VALUES (?, ?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE " +
+                "total_count = total_count + VALUES(total_count), " +
+                "start_count = start_count + VALUES(start_count), " +
+                "end_count = end_count + VALUES(end_count), " +
+                "uppercase_count = uppercase_count + VALUES(uppercase_count), " +
+                "title_count = title_count + VALUES(title_count)";
 
-        // try-catch automatically closes the PreparedStatement and handles any errors
         try (Connection conn = connectionProvider.get();
              PreparedStatement preparedStatement = conn.prepareStatement(sql)) {
 
-            // Get parameters from Word entity
             preparedStatement.setString(1, word.getWord());
             preparedStatement.setInt(2, word.getTotalCount());
             preparedStatement.setInt(3, word.getStartCount());
@@ -62,17 +68,14 @@ public class WordDAO {
             preparedStatement.setInt(5, word.getUppercaseCount());
             preparedStatement.setInt(6, word.getTitleCount());
 
-            // Insert word
             int rowsAffected = preparedStatement.executeUpdate();
-            // Word successfully inserted if there are rows affected
-            if (rowsAffected > 0) {
-                return true;
-            }
+            return rowsAffected > 0;
+
         } catch (SQLException e) {
-            System.err.println("Error inserting word");
+            System.err.println("Error performing upsert for word: " + word.getWord());
             e.printStackTrace();
+            return false;
         }
-        return false;
     }
 
     /**

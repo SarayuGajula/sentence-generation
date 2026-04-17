@@ -25,7 +25,7 @@ public class SourceDAOTest {
 
     // DB_CLOSE_DELAY=-1 keeps the DB alive during the tests.
     // INIT=RUNSCRIPT executes the schema.sql file that creates all the tables!
-    private final String H2_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'";
+    private final String H2_URL = "jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'classpath:schema.sql'";
     private final String H2_USER = "sa";
     private final String H2_PASSWORD = "";
 
