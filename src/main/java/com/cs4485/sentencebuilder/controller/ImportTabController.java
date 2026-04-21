@@ -14,6 +14,8 @@ import com.cs4485.sentencebuilder.Tokenizer;
 import com.cs4485.sentencebuilder.WordAnalyzer;
 import com.cs4485.sentencebuilder.model.entity.Bigram;
 import com.cs4485.sentencebuilder.model.entity.Word;
+import com.cs4485.sentencebuilder.model.dao.WordDAO;   // needed to save words to database
+import com.cs4485.sentencebuilder.model.dao.BigramDAO; // needed to save bigrams to database
 
 /**
  * Controller for the import tab
@@ -22,7 +24,7 @@ import com.cs4485.sentencebuilder.model.entity.Word;
  * @author Sarayu Gajula
  * 4/2/2026 - Dummy version implemented that doesn't actually do anything yet - Connor Harris
  * 4/10/2026 - Extracted all fields and functions for import tab from Connor's MainController - Daniel Dimitrov
- * 4/11/2026 - Wired up Tokenizer and WordAnalyzer to onImport - Sarayu Gajula
+ * 4/21/2026 - Wired up Tokenizer, WordAnalyzer, and DAOs to save to database - Sarayu Gajula
  */
 public class ImportTabController {
     @FXML private TextField filePathField;
@@ -62,6 +64,18 @@ public class ImportTabController {
             // Step 3: Get word counts and bigrams from WordAnalyzer - Sarayu Gajula
             Map<String, Word> words = WordAnalyzer.getWords(tokens);
             Map<String, Bigram> bigrams = WordAnalyzer.getBigrams(tokens);
+
+            // Step 4: Save each word to the database using WordDAO - Sarayu Gajula
+            WordDAO wordDAO = new WordDAO();
+            for (Word word : words.values()) {
+                wordDAO.insertOrUpdate(word);
+            }
+
+            // Step 5: Save each bigram to the database using BigramDAO - Sarayu Gajula
+            BigramDAO bigramDAO = new BigramDAO();
+            for (Bigram bigram : bigrams.values()) {
+                bigramDAO.insertOrUpdate(bigram);
+            }
 
             importStatus.setText("Successfully imported " + words.size() + " unique words.");
         } catch (IOException e) {
