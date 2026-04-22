@@ -3,9 +3,10 @@ package com.cs4485.sentencebuilder;
  * Provides utility methods for analyzing word frequency and bigrams.
  * Maps to the 'words' and 'bigrams' tables in the database.
  * @author Sarayu Gajula, Jeffrey Gilbert, Joe Su
- * 03/14/2026 - Initial creation - Sarayu
- * 03/31/2026 - Changed getWords to use Word object - Jeff + Joe
- * 04/02/2026 - Fixed capitalization counts, added punctuation processing, updated getBigrams to use Bigram object - Joe
+ * 3/14/2026 - Initial creation - Sarayu
+ * 3/31/2026 - Changed getWords to use Word object - Jeff + Joe
+ * 4/2/2026 - Fixed capitalization counts, added punctuation processing, updated getBigrams to use Bigram object - Joe
+ * 4/22/2026 - Fixed punctuation handling - Joe
  */
 import java.util.HashMap; // HashMap lets us store key-value pairs (token -> Word)
 import java.util.List;    // List is the data type for the input (a list of words)
@@ -16,7 +17,8 @@ import com.cs4485.sentencebuilder.model.entity.Bigram;
 
 public class WordAnalyzer {
 
-    static final String punctRegex = "[.!?;]+";
+    static final String punctRegex = "[-.!?;\"]+";
+    static final String startPunctRegex = "^[-'\"]+";
     static final String endPunctRegex = ".*" + punctRegex + "$"; // checks if the word ends with punctuation
     static final String notPunct = "[^.!?;]+"; // finds everything that's not punctuation
 
@@ -26,13 +28,14 @@ public class WordAnalyzer {
     public static Map<String, Word> getWords(List<String> words) {
         
         // Create an empty map to store each token and its Word
-        Map<String,Word> wordCounts = new HashMap<String,Word>();
+        Map<String,Word> wordCounts = new HashMap<>();
 
         // Loop through every word in the list
         for (int i = 0; i < words.size(); i++) {
             String word = words.get(i);
             // first word is a starting word
-            String rawWord = word.replaceAll(punctRegex + "$", ""); // get rid of ending punctuation, used for capitalization counts
+            String rawWord = word.replaceAll(punctRegex + "$", ""); // get rid of ending punctuation and quotations, used for capitalization counts
+            rawWord = rawWord.replaceAll(startPunctRegex, "");
             if(rawWord.isEmpty()) { continue; }
 
             String token = rawWord.toLowerCase(); // get rid of capitalization
@@ -67,7 +70,7 @@ public class WordAnalyzer {
             }
 
             String punct = word.replaceAll(notPunct, "");
-            if(!punct.equals("")){ // punctuation detected
+            if(punct.isEmpty()){ // punctuation detected
 
                 // treat punctuation as a unique kind of word that only stores totalCount
                 if(!wordCounts.containsKey(punct)){
@@ -100,7 +103,7 @@ public class WordAnalyzer {
         for (int i = 0; i < words.size(); i++) {
 
             String firstWord = words.get(i);
-            String firstToken = firstWord.toLowerCase().replaceAll(punctRegex, "");
+            String firstToken = firstWord.toLowerCase().replaceAll(punctRegex, "").replaceAll(startPunctRegex, "");
             if(firstWord.matches(endPunctRegex)){
                 String punct = firstWord.replaceAll(notPunct, "");
                 String token = firstToken + " " + punct;
@@ -118,7 +121,7 @@ public class WordAnalyzer {
 
             if(i >= words.size() - 1){ continue; }
 
-            String secondToken = words.get(i+1).toLowerCase().replaceAll(punctRegex, "");
+            String secondToken = words.get(i+1).toLowerCase().replaceAll(punctRegex, "").replaceAll(startPunctRegex, "");
             String token = firstToken + " " + secondToken;
 
             if(!bigrams.containsKey(token)){

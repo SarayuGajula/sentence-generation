@@ -11,12 +11,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /**
  * Tests the WordAnalyzer
  * @author Joe Su
- * 04/13/2026 - Initial creation
+ * 4/13/2026 - Initial creation
+ * 4/22/2026 - Updates to test punctuation handling
  */
 
 public class WordAnalyzerTest {
-    private WordAnalyzer wordAnalyzer;
-    List<String> testList = List.of("Sentence", "one.", "Sentence", "TWO!");
+    List<String> testList = List.of("\"Sentence", "one.", "Sentence", "-TWO!");
 
     @Test
     public void testGetWordsTotalCounts(){
