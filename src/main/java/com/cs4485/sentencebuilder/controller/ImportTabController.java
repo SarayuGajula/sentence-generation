@@ -71,19 +71,15 @@ public class ImportTabController {
                 Map<String, Word> words = WordAnalyzer.getWords(tokens);
                 Map<String, Bigram> bigrams = WordAnalyzer.getBigrams(tokens);
 
-                // Step 4: Save each word to the database using WordDAO - Sarayu Gajula
+                // Step 4: Save all words to the database in one batch - Sarayu Gajula
                 updateMessage("Saving " + words.size() + " words…");
                 WordDAO wordDAO = new WordDAO();
-                for (Word word : words.values()) {
-                    wordDAO.insertOrUpdate(word);
-                }
+                wordDAO.insertOrUpdateBatch(words.values());
 
-                // Step 5: Save each bigram to the database using BigramDAO - Sarayu Gajula
+                // Step 5: Save all bigrams to the database in one batch - Sarayu Gajula
                 updateMessage("Saving " + bigrams.size() + " bigrams…");
                 BigramDAO bigramDAO = new BigramDAO();
-                for (Bigram bigram : bigrams.values()) {
-                    bigramDAO.insertOrUpdate(bigram);
-                }
+                bigramDAO.insertOrUpdateBatch(bigrams.values());
 
                 updateMessage("Successfully imported " + words.size() + " unique words.");
                 return null;

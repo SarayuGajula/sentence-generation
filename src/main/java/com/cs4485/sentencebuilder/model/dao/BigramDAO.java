@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -16,12 +17,14 @@ import java.util.function.Supplier;
  * Data Access Object for the Bigram entity.
  * Handles all CRUD operations for the 'bigrams' database table.
  * @author Daniel Dimitrov
+ * @author Connor Harris
  * 02/14/2026 - Initial creation
  * 04/01/2026 - Added getTopKMostCommonBigramsStartingWithWord
  * 04/09/2026 - Added connectionProvider and constructors for testing
  * 04/09/2026 - Added comment for getTopKMostCommonBigramsStartingWithWord and fixed SQL statement
  * 04/17/2026 - Small fix in query for getTopKMostCommonBigramsStartingWithWord
  * 04/17/2026 - Changed insert function to update preexisting bigrams by summing old counts and new counts
+ * 04/21/2026 - Added insertOrUpdateBatch for faster bulk imports - Connor Harris
  */
 public class BigramDAO {
 
@@ -71,6 +74,51 @@ public class BigramDAO {
                     bigram.getFirstWord() + " " + bigram.getSecondWord());
             e.printStackTrace();
             return false;
+        }
+    }
+
+    /**
+     * Inserts or updates a collection of Bigrams in a single batch, much faster than
+     * calling insertOrUpdate() individually for large files.
+     *
+     * @param bigrams The collection of Bigram entities to insert/update.
+     * @return true if the batch executed without error, false otherwise.
+     */
+    public boolean insertOrUpdateBatch(Collection<Bigram> bigrams) {
+        String sql = "INSERT INTO bigrams (first_word, second_word, count) " +
+                "VALUES (?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE " +
+                "count = count + VALUES(count)";
+
+        Connection conn = connectionProvider.get();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            conn.setAutoCommit(false);
+            conn.createStatement().execute("SET FOREIGN_KEY_CHECKS=0");
+
+            for (Bigram bigram : bigrams) {
+                // Skip bigrams with empty words to avoid foreign key constraint violations
+                if (bigram.getFirstWord().isBlank() || bigram.getSecondWord().isBlank()) continue;
+                ps.setString(1, bigram.getFirstWord());
+                ps.setString(2, bigram.getSecondWord());
+                ps.setInt(3, bigram.getCount());
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Error performing batch upsert for bigrams.");
+            e.printStackTrace();
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            return false;
+        } finally {
+            try {
+                conn.createStatement().execute("SET FOREIGN_KEY_CHECKS=1");
+                conn.setAutoCommit(true);
+            } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 
