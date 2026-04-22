@@ -26,3 +26,10 @@ CREATE TABLE bigrams (
     FOREIGN KEY (first_word) REFERENCES words(word),
     FOREIGN KEY (second_word) REFERENCES words(word)
 );
+
+CREATE TABLE generated_sentences (
+    id int AUTO_INCREMENT PRIMARY KEY,
+    sentence TEXT(65535) NOT NULL,
+    algorithm varchar(255) NOT NULL,
+    generated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

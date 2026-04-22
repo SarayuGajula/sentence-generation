@@ -20,3 +20,10 @@ CREATE TABLE IF NOT EXISTS bigrams (
     count int NOT NULL,
     PRIMARY KEY (first_word, second_word)
 );
+
+CREATE TABLE IF NOT EXISTS generated_sentences (
+    id int AUTO_INCREMENT PRIMARY KEY,
+    sentence TEXT(65535) NOT NULL,
+    algorithm varchar(255) NOT NULL,
+    generated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
