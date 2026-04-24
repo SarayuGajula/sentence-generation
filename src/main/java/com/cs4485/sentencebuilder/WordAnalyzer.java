@@ -1,14 +1,5 @@
 package com.cs4485.sentencebuilder;
-/**
- * Provides utility methods for analyzing word frequency and bigrams.
- * Maps to the 'words' and 'bigrams' tables in the database.
- * @author Sarayu Gajula, Jeffrey Gilbert, Joe Su
- * 3/14/2026 - Initial creation - Sarayu
- * 3/31/2026 - Changed getWords to use Word object - Jeff + Joe
- * 4/2/2026 - Fixed capitalization counts, added punctuation processing, updated getBigrams to use Bigram object - Joe
- * 4/22/2026 - Added more robust punctuation handling - Joe
- * 4/23/2026 - Fixed punctuation handling - Joe
- */
+
 import java.util.HashMap; // HashMap lets us store key-value pairs (token -> Word)
 import java.util.List;    // List is the data type for the input (a list of words)
 import java.util.Map;     // Map is the data type we return (token -> Word)
@@ -18,13 +9,24 @@ import java.util.regex.Pattern;
 import com.cs4485.sentencebuilder.model.entity.Word;
 import com.cs4485.sentencebuilder.model.entity.Bigram;
 
+/**
+ * Provides utility methods for analyzing word frequency and bigrams.
+ * Maps to the 'words' and 'bigrams' tables in the database.
+ * @author Sarayu Gajula, Jeffrey Gilbert, Joe Su, Daniel Dimitrov
+ * 3/14/2026 - Initial creation - Sarayu
+ * 3/31/2026 - Changed getWords to use Word object - Jeff + Joe
+ * 4/2/2026 - Fixed capitalization counts, added punctuation processing, updated getBigrams to use Bigram object - Joe
+ * 4/22/2026 - Added more robust punctuation handling - Joe
+ * 4/23/2026 - Fixed punctuation handling - Joe
+ * 4/23/2026 - Expanded garbage regex to handle more garbage - Daniel
+ */
 public class WordAnalyzer {
 
     static final String punctRegex = ".!?;"; // punctuation we want to keep
     static final String startPunctRegex = "^[" + punctRegex + "]+";
     static final String endPunctRegex = "[" + punctRegex + "]+$";
     static final String endPunctRegexMatch = ".*" + endPunctRegex; // used for matching instead of replacing
-    static final String garbage = "[-_'\"]+"; // punctuation we don't want to store (neither starting nor ending)
+    static final String garbage = "[-_,'\"“”‘’()\\]\\[:*#+$0-9%]+"; // punctuation we don't want to store (neither starting nor ending)
 
     /**
      * Takes a list of words and converts them to Word objects with updated counts
