@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -15,11 +16,13 @@ import java.util.function.Supplier;
  * Data Access Object for the Word entity.
  * Handles all CRUD operations for the 'words' database table.
  * @author Daniel Dimitrov
+ * @author Connor Harris
  * 02/14/2026 - Initial creation
  * 03/31/2026 - Updated for newly added uppercase and title counts
  * 04/09/2026 - Added connectionProvider and constructors for testing
  * 04/10/2026 - Added get function to retrieve single word
  * 04/17/2026 - Changed insert function to update preexisting words by summing old counts and new counts
+ * 04/21/2026 - Added insertOrUpdateBatch for faster bulk imports - Connor Harris
  */
 public class WordDAO {
 
@@ -75,6 +78,52 @@ public class WordDAO {
             System.err.println("Error performing upsert for word: " + word.getWord());
             e.printStackTrace();
             return false;
+        }
+    }
+
+    /**
+     * Inserts or updates a collection of Words in a single batch, much faster than
+     * calling insertOrUpdate() individually for large files.
+     *
+     * @param words The collection of Word entities to insert/update.
+     * @return true if the batch executed without error, false otherwise.
+     */
+    public boolean insertOrUpdateBatch(Collection<Word> words) {
+        String sql = "INSERT INTO words (word, total_count, start_count, end_count, uppercase_count, title_count) " +
+                "VALUES (?, ?, ?, ?, ?, ?) " +
+                "ON DUPLICATE KEY UPDATE " +
+                "total_count = total_count + VALUES(total_count), " +
+                "start_count = start_count + VALUES(start_count), " +
+                "end_count = end_count + VALUES(end_count), " +
+                "uppercase_count = uppercase_count + VALUES(uppercase_count), " +
+                "title_count = title_count + VALUES(title_count)";
+
+        Connection conn = connectionProvider.get();
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            conn.setAutoCommit(false);
+
+            for (Word word : words) {
+                ps.setString(1, word.getWord());
+                ps.setInt(2, word.getTotalCount());
+                ps.setInt(3, word.getStartCount());
+                ps.setInt(4, word.getEndCount());
+                ps.setInt(5, word.getUppercaseCount());
+                ps.setInt(6, word.getTitleCount());
+                ps.addBatch();
+            }
+
+            ps.executeBatch();
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            System.err.println("Error performing batch upsert for words.");
+            e.printStackTrace();
+            try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            return false;
+        } finally {
+            try { conn.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.cs4485.sentencebuilder.controller;
 
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
@@ -25,6 +26,7 @@ import com.cs4485.sentencebuilder.model.dao.BigramDAO; // needed to save bigrams
  * 4/2/2026 - Dummy version implemented that doesn't actually do anything yet - Connor Harris
  * 4/10/2026 - Extracted all fields and functions for import tab from Connor's MainController - Daniel Dimitrov
  * 4/21/2026 - Wired up Tokenizer, WordAnalyzer, and DAOs to save to database - Sarayu Gajula
+ * 4/21/2026 - Made importing a background task so that it doesn't freeze your screen when importing large files - Connor Harris
  */
 public class ImportTabController {
     @FXML private TextField filePathField;
@@ -54,32 +56,46 @@ public class ImportTabController {
             importStatus.setText("Please select a file first.");
             return;
         }
-        try {
-            // Step 1: Read the file using Tokenizer - Sarayu Gajula
-            String text = Tokenizer.readFile(path);
 
-            // Step 2: Tokenize the text into a list of words - Sarayu Gajula
-            List<String> tokens = Tokenizer.tokenize(text);
+        Task<Void> importTask = new Task<>() {
+            @Override
+            protected Void call() throws IOException {
+                // Step 1: Read the file using Tokenizer - Sarayu Gajula
+                updateMessage("Reading file…");
+                String text = Tokenizer.readFile(path);
 
-            // Step 3: Get word counts and bigrams from WordAnalyzer - Sarayu Gajula
-            Map<String, Word> words = WordAnalyzer.getWords(tokens);
-            Map<String, Bigram> bigrams = WordAnalyzer.getBigrams(tokens);
+                // Step 2: Tokenize the text into a list of words - Sarayu Gajula
+                List<String> tokens = Tokenizer.tokenize(text);
 
-            // Step 4: Save each word to the database using WordDAO - Sarayu Gajula
-            WordDAO wordDAO = new WordDAO();
-            for (Word word : words.values()) {
-                wordDAO.insertOrUpdate(word);
+                // Step 3: Get word counts and bigrams from WordAnalyzer - Sarayu Gajula
+                Map<String, Word> words = WordAnalyzer.getWords(tokens);
+                Map<String, Bigram> bigrams = WordAnalyzer.getBigrams(tokens);
+
+                // Step 4: Save all words to the database in one batch - Sarayu Gajula
+                updateMessage("Saving " + words.size() + " words…");
+                WordDAO wordDAO = new WordDAO();
+                wordDAO.insertOrUpdateBatch(words.values());
+
+                // Step 5: Save all bigrams to the database in one batch - Sarayu Gajula
+                updateMessage("Saving " + bigrams.size() + " bigrams…");
+                BigramDAO bigramDAO = new BigramDAO();
+                bigramDAO.insertOrUpdateBatch(bigrams.values());
+
+                updateMessage("Successfully imported " + words.size() + " unique words.");
+                return null;
             }
+        };
 
-            // Step 5: Save each bigram to the database using BigramDAO - Sarayu Gajula
-            BigramDAO bigramDAO = new BigramDAO();
-            for (Bigram bigram : bigrams.values()) {
-                bigramDAO.insertOrUpdate(bigram);
-            }
+        importStatus.textProperty().bind(importTask.messageProperty());
 
-            importStatus.setText("Successfully imported " + words.size() + " unique words.");
-        } catch (IOException e) {
-            importStatus.setText("Error reading file: " + e.getMessage());
-        }
+        importTask.setOnSucceeded(e -> importStatus.textProperty().unbind());
+        importTask.setOnFailed(e -> {
+            importStatus.textProperty().unbind();
+            importStatus.setText("Error: " + importTask.getException().getMessage());
+        });
+
+        Thread thread = new Thread(importTask);
+        thread.setDaemon(true);
+        thread.start();
     }
 }

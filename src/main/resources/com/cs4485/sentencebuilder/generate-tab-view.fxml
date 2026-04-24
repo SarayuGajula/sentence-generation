@@ -2,8 +2,10 @@
 <!-- UI for the generate tab
 @author Connor Harris
 @author Daniel Dimitrov
+@author Joe Su
 4/2/2026 - Initial version implemented. - Connor Harris
 4/10/2026 - Extracted from Connor's main-view.fxml into a separate view - Daniel Dimitrov
+4/22/2026 - Update to make generate button unavailable by default - Joe Su
 -->
 
 <?import javafx.geometry.Insets?>
@@ -32,7 +34,7 @@
                 <ComboBox fx:id="algorithmCombo" prefWidth="220"/>
             </HBox>
 
-            <Button text="Generate Sentence" onAction="#onGenerate" prefWidth="150"/>
+            <Button fx:id="generateButton" text="Generate Sentence" onAction="#onGenerate" prefWidth="150"/>
 
             <Separator/>
             <Label text="Output:" style="-fx-font-weight: bold;"/>
