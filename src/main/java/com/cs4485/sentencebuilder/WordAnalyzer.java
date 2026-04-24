@@ -26,7 +26,7 @@ public class WordAnalyzer {
     static final String startPunctRegex = "^[" + punctRegex + "]+";
     static final String endPunctRegex = "[" + punctRegex + "]+$";
     static final String endPunctRegexMatch = ".*" + endPunctRegex; // used for matching instead of replacing
-    static final String garbage = "[-_,'\"“”‘’()\\]\\[:*#+$0-9%]+•"; // punctuation we don't want to store (neither starting nor ending)
+    static final String garbage = "[-_,'\"“”‘’()\\]\\[:*#+$0-9%•]+"; // punctuation we don't want to store (neither starting nor ending)
 
     /**
      * Takes a list of words and converts them to Word objects with updated counts
@@ -155,6 +155,6 @@ public class WordAnalyzer {
     }
 
     private static String cleanWord(String word){
-        return  word.replaceAll(garbage + "$", "").replaceAll("^" + garbage, "");
+        return  word.replaceAll(garbage + "$", "").replaceFirst(garbage, "");
     }
 }
