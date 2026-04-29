@@ -9,6 +9,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <AnchorPane xmlns="http://javafx.com/javafx"
@@ -29,5 +31,10 @@
             </columns>
             <placeholder><Label text="No sentences generated yet."/></placeholder>
         </TableView>
+
+        <HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Refresh" onAction="#onRefresh" prefWidth="80"/>
+        </HBox>
     </VBox>
 </AnchorPane>

@@ -90,7 +90,7 @@ public class GeneratedSentenceDAO {
                 int id = rs.getInt("id");
                 String sentence = rs.getString("sentence");
                 String algorithm = rs.getString("algorithm");
-                Date generatedAt = rs.getDate("generated_at");
+                Date generatedAt = rs.getTimestamp("generated_at");
 
                 GeneratedSentence generatedSentence = new GeneratedSentence(id, sentence, algorithm, generatedAt);
 
