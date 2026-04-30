@@ -97,7 +97,7 @@ public class AutocompleteTest {
     }
 
     @Test
-    public void testSuggestThreeWords(){
+    public void testSuggestThreeWords(){      
         for(String input: inputWords){
             List<String> output = ac.suggestThreeWords(input);
             System.out.println("Input word: " + input);
