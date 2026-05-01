@@ -95,15 +95,23 @@ public class AutoCompleteTabController {
 
     @FXML
     protected void onUseSuggestion() {
+
         String selected = suggestionsList.getSelectionModel().getSelectedItem();
-        if (selected != null) { // If character is whitespace, don't add a leading space
-            if (Character.isWhitespace(autocompleteInput.getText().charAt(autocompleteInput.getLength()))) {
-                autocompleteInput.appendText(selected + " ");
-            } else {
-                autocompleteInput.appendText(" " + selected + " ");
-            }
-            suggestionsList.getItems().clear();
+        if (selected == null) {
+            return;
         }
+
+        String text = autocompleteInput.getText();
+
+        // If empty or last character is whitespace, no leading space needed
+        if (text.isEmpty()
+                || Character.isWhitespace(text.charAt(text.length() - 1))) {
+            autocompleteInput.appendText(selected + " ");
+        } else {
+            autocompleteInput.appendText(" " + selected + " ");
+        }
+
+        suggestionsList.getItems().clear();
     }
 
     @FXML
