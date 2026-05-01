@@ -1,6 +1,7 @@
 package com.cs4485.sentencebuilder.controller;
 
 import com.cs4485.sentencebuilder.model.dao.WordDAO;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
@@ -8,6 +9,9 @@ import javafx.scene.control.TextArea;
 import javafx.beans.value.ChangeListener;
 
 import com.cs4485.sentencebuilder.Autocomplete;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Controller for the auto-complete tab
@@ -81,7 +85,12 @@ public class AutoCompleteTabController {
 
     @FXML
     protected void generateSuggestions(String lastWord) {
-        suggestionsList.setItems((ObservableList<String>) ac.suggestThreeWords(lastWord));
+        List<String> suggestions = ac.suggestThreeWords(lastWord);
+
+        ObservableList<String> observableSuggestions =
+                FXCollections.observableArrayList(suggestions);
+
+        suggestionsList.setItems(observableSuggestions);
     }
 
     @FXML
