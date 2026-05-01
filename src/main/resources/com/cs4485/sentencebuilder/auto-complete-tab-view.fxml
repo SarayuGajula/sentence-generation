@@ -28,8 +28,8 @@
         <ListView fx:id="suggestionsList" prefHeight="160"/>
 
         <HBox spacing="8">
-            <Button text="Use Selected Word" onAction="#onUseSuggestion" prefWidth="150"/>
-            <Button text="Clear" onAction="#onClearAutocomplete" prefWidth="80"/>
+            <Button fx:id="useSuggestionButton" text="Use Selected Word" onAction="#onUseSuggestion" prefWidth="150"/>
+            <Button fx:id="clearAutocompleteButton" text="Clear" onAction="#onClearAutocomplete" prefWidth="80"/>
         </HBox>
     </VBox>
 </AnchorPane>
