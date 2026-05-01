@@ -111,7 +111,7 @@ public class AutoCompleteTabController {
             autocompleteInput.appendText(" " + selected + " ");
         }
 
-        suggestionsList.getItems().clear();
+        generateSuggestions(selected);
     }
 
     @FXML
