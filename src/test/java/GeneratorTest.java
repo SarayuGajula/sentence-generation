@@ -17,8 +17,6 @@ import java.util.List;
 import java.util.Map;
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 /**
  * Tests generation algorithms
  * @author Joe Su
@@ -100,7 +98,7 @@ public class GeneratorTest {
 
     @Test
     public void testCommonGenerator(){
-        double avgLen = 0.0;
+        double avgLen = 0.0; // used to detect if sentences are generating naturally or hitting limit
         for(String input: inputWords){
             String output = gen.commonGenerator(input);
             int len = output.split("\\s+").length;
@@ -115,7 +113,7 @@ public class GeneratorTest {
 
     @Test
     public void testTopFiveGenerator(){
-        double avgLen = 0.0;
+        double avgLen = 0.0; // used to detect if sentences are generating naturally or hitting limit
         for(String input: inputWords){
             String output = gen.topFiveWordsGenerator(input);
             int len = output.split("\\s+").length;

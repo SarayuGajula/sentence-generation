@@ -6,8 +6,8 @@ package com.cs4485.sentencebuilder;
  *      Following word is the most common
  *      Get top 5 words, weight them with probabilities and randomly pick one
  * @author Joe Su
- * 04/02/2026 - Initial creation, needs update for capitalization and probabilities - Joe
- * 04/10/2026 - Added capitalization and selection based on probability - Joe
+ * 4/2/2026 - Initial creation, needs update for capitalization and probabilities - Joe
+ * 4/10/2026 - Added capitalization and selection based on probability - Joe
  * 4/16/2026 - Updates to add initializing with DAO's for testing - Joe
  */
 
@@ -49,9 +49,9 @@ public class Generator {
         StringBuilder sb = new StringBuilder();
         sb.append(first);
         String word = first.toLowerCase().replaceAll(punctRegex + "$", ""); // word to display next
-        int count = 0; // for debugging
+        int count = 0; // used to prevent infinite loop
 
-        while(!word.matches(punctRegex) && count < 50){
+        while(!word.matches(punctRegex) && count < 50){ // if word is punctuation or too long, end the sentence
             List<Bigram> bigrams = bigramDAO.getTopKMostCommonBigramsStartingWithWord(1, word.toLowerCase());
             if(bigrams == null || bigrams.isEmpty()){ break; }
             Bigram commonBigram = bigrams.get(0);
@@ -64,7 +64,7 @@ public class Generator {
                 break;
             }
 
-            sb.append(" ").append(next);
+            sb.append(" ").append(next); // add to sentence
 
             word = next.toLowerCase().replaceAll(punctRegex + "$", "");
             count++;
@@ -76,10 +76,10 @@ public class Generator {
     public String topFiveWordsGenerator(String first){
         StringBuilder sb = new StringBuilder(first);
         String word = first.toLowerCase().replaceAll(punctRegex + "$", ""); // word to display next
-        int count = 0; // for debugging
+        int count = 0;
         Random r = new Random();
 
-        while(!word.matches(punctRegex) && count < 50){
+        while(!word.matches(punctRegex) && count < 50){ // if word is punctuation or too long, end the sentence
             List<Bigram> bigrams = bigramDAO.getTopKMostCommonBigramsStartingWithWord(5, word.toLowerCase());
             if(bigrams == null || bigrams.isEmpty()){ break; }
 
@@ -117,7 +117,7 @@ public class Generator {
                 break;
             }
 
-            sb.append(" ").append(next);
+            sb.append(" ").append(next); // add to sentence
 
             word = next.toLowerCase().replaceAll(punctRegex + "$", "");
             count++;
@@ -126,6 +126,9 @@ public class Generator {
         return sb.toString();
     }
 
+    /**
+     * Checks if there is a consistent capitalization associated with a word and capitalizes accordingly
+    */
     private String checkCapitalization(String str){
         Word word = wordDAO.get(str);
         String strCopy = str;

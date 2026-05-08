@@ -23,8 +23,8 @@ import com.cs4485.sentencebuilder.model.entity.Bigram;
 public class WordAnalyzer {
 
     static final String punctRegex = ".!?;"; // punctuation we want to keep
-    static final String startPunctRegex = "^[" + punctRegex + "]+";
-    static final String endPunctRegex = "[" + punctRegex + "]+$";
+    static final String startPunctRegex = "^[" + punctRegex + "]+"; // check if word begins with punctuation
+    static final String endPunctRegex = "[" + punctRegex + "]+$"; // check if word ends with punctuation
     static final String endPunctRegexMatch = ".*" + endPunctRegex; // used for matching instead of replacing
     static final String garbage = "[-_,'\"“”‘’()\\]\\[:*#+$0-9%•]+"; // punctuation we don't want to store (neither starting nor ending)
 
@@ -42,7 +42,7 @@ public class WordAnalyzer {
             String rawWord = getRawWord(word); // get rid of starting and ending punctuation, used for capitalization counts
             if(rawWord.isEmpty()) { continue; }
 
-            String token = rawWord.toLowerCase(); // get rid of capitalization
+            String token = rawWord.toLowerCase(); // get rid of capitalization, used as key
             int startCount = 0;
             int endCount = 0;
             int uppercaseCount = 0;
@@ -52,7 +52,7 @@ public class WordAnalyzer {
             if(i == 0){ startCount = 1; }
             else if(cleanWord(words.get(i-1)).matches(endPunctRegexMatch)) { startCount = 1; }
             if(word.matches(endPunctRegexMatch)) { endCount = 1; }
-            if(token.toUpperCase().equals(rawWord)) {uppercaseCount = 1; }
+            if(token.toUpperCase().equals(rawWord)) { uppercaseCount = 1; }
             else if((Character.toUpperCase(token.charAt(0)) + token.substring(1)).equals(rawWord)) { titleCount = 1; }
 
             // if word is not in list, initialize
@@ -108,7 +108,7 @@ public class WordAnalyzer {
 
             String firstWord = cleanWord(words.get(i));
             String firstToken = getRawWord(firstWord).toLowerCase();
-            if(firstWord.matches(endPunctRegexMatch)){
+            if(firstWord.matches(endPunctRegexMatch)){ // if first word ends in punctuation, split it from punctuation
                 Matcher m = Pattern.compile(endPunctRegex).matcher(firstWord);
                 m.find();
                 String punct = m.group();
@@ -126,7 +126,7 @@ public class WordAnalyzer {
                 }
             }
 
-            if(i >= words.size() - 1){ continue; }
+            if(i >= words.size() - 1){ continue; } // bounds checking for looking ahead
 
             String secondToken = getRawWord(words.get(i+1)).toLowerCase();
             String token = firstToken + " " + secondToken;
@@ -147,6 +147,9 @@ public class WordAnalyzer {
         return bigrams;
     }
 
+    /**
+     * Gets rid of starting and ending punctuation, leaving just the raw word
+    */
     private static String getRawWord(String word){
         String rawWord = cleanWord(word);
         rawWord = rawWord.replaceAll(endPunctRegex, "");
@@ -154,7 +157,10 @@ public class WordAnalyzer {
         return rawWord;
     }
 
+    /**
+     * Gets rid of garbage characters
+     */
     private static String cleanWord(String word){
-        return  word.replaceAll(garbage + "$", "").replaceFirst(garbage, "");
+        return word.replaceAll(garbage + "$", "").replaceFirst(garbage, "");
     }
 }

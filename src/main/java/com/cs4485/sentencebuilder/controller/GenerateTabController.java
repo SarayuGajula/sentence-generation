@@ -66,6 +66,7 @@ public class GenerateTabController {
         generator = new Generator();
         generatedSentenceDAO = new GeneratedSentenceDAO();
 
+        // used to disable button if no input word
         generateButton.disableProperty().bind(startWordField.textProperty().map(text -> text.trim().isEmpty()));
     }
 }

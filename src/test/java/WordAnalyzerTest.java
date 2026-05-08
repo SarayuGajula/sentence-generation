@@ -35,8 +35,6 @@ public class WordAnalyzerTest {
 //            System.out.println();
 //        }
 
-
-
         bigramMap = WordAnalyzer.getBigrams(testList);
 //        for(Bigram bigram : bigramMap.values()){
 //            System.out.println("First word: " + bigram.getFirstWord());
