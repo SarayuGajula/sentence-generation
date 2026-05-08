@@ -1,13 +1,16 @@
-import com.cs4485.sentencebuilder.logic.Generator;
+package logic;
+
+import com.cs4485.sentencebuilder.logic.Autocomplete;
+import com.cs4485.sentencebuilder.logic.Tokenizer;
+import com.cs4485.sentencebuilder.logic.WordAnalyzer;
 import com.cs4485.sentencebuilder.model.dao.BigramDAO;
 import com.cs4485.sentencebuilder.model.dao.WordDAO;
 import com.cs4485.sentencebuilder.model.entity.Bigram;
 import com.cs4485.sentencebuilder.model.entity.Word;
-import com.cs4485.sentencebuilder.logic.Tokenizer;
-import com.cs4485.sentencebuilder.logic.WordAnalyzer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -15,15 +18,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.io.IOException;
 
 /**
- * Tests generation algorithms
- * @author Joe Su
- * 04/16/2026 - Initial creation
+ * Tests autocomplete
+ * @author Jeffrey Gilbert
+ * 04/23/2026 - Initial creation
  */
 
-public class GeneratorTest {
+public class AutocompleteTest { // Jeffrey Gilbert
 
     private WordDAO wordDao;
     private BigramDAO bigramDao;
@@ -34,7 +36,7 @@ public class GeneratorTest {
     private final String H2_USER = "sa";
     private final String H2_PASSWORD = "";
 
-    private Generator gen;
+    private Autocomplete ac;
     List<String> inputWords = List.of("This", "A", "John", "Because", "It's", "Jesus", "Yes");
     // test input is Crime and Punishment by Fyodor Dostoevsky from Project Gutenberg
 
@@ -43,7 +45,7 @@ public class GeneratorTest {
      * @throws SQLException if the test database cannot be connected to
      */
     @BeforeEach
-    public void setup() throws SQLException {
+    public void setup() throws SQLException { // Jeffrey Gilbert
         // Initialize the DAO with a Supplier that generates H2 connections
         wordDao = new WordDAO(() -> {
             try {
@@ -93,36 +95,18 @@ public class GeneratorTest {
             bigramDao.insertOrUpdate(bigram);
         }
 
-        gen = new Generator(wordDao, bigramDao);
+        ac = new Autocomplete(wordDao, bigramDao);
     }
 
     @Test
-    public void testCommonGenerator(){
-        double avgLen = 0.0; // used to detect if sentences are generating naturally or hitting limit
+    public void testSuggestThreeWords(){ // Jeffrey Gilbert
         for(String input: inputWords){
-            String output = gen.commonGenerator(input);
-            int len = output.split("\\s+").length;
-            avgLen += len;
+            List<String> output = ac.suggestThreeWords(input);
             System.out.println("Input word: " + input);
-            System.out.println(output);
-            System.out.println("Sentence length: " + len);
+            int i = 1;
+            for (String outputWord: output){
+                System.out.println("Suggestion " + i + ": " + outputWord);
+            }
         }
-        avgLen/=inputWords.size();
-        System.out.println("Average sentence length: " + avgLen);
-    }
-
-    @Test
-    public void testTopFiveGenerator(){
-        double avgLen = 0.0; // used to detect if sentences are generating naturally or hitting limit
-        for(String input: inputWords){
-            String output = gen.topFiveWordsGenerator(input);
-            int len = output.split("\\s+").length;
-            avgLen += len;
-            System.out.println("Input word: " + input);
-            System.out.println(output);
-            System.out.println("Sentence length: " + len);
-        }
-        avgLen/=inputWords.size();
-        System.out.println("Average sentence length: " + avgLen);
     }
 }

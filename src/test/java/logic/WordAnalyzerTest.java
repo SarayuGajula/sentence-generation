@@ -1,3 +1,5 @@
+package logic;
+
 import com.cs4485.sentencebuilder.logic.WordAnalyzer;
 import com.cs4485.sentencebuilder.model.entity.Bigram;
 import com.cs4485.sentencebuilder.model.entity.Word;

@@ -1,3 +1,5 @@
+package logic;
+
 import com.cs4485.sentencebuilder.logic.Tokenizer;
 import org.junit.jupiter.api.Test;
 import java.util.List;
