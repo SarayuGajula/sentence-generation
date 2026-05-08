@@ -23,7 +23,7 @@ import java.util.Map;
  * 04/23/2026 - Initial creation
  */
 
-public class AutocompleteTest {
+public class AutocompleteTest { // Jeffrey Gilbert
 
     private WordDAO wordDao;
     private BigramDAO bigramDao;
@@ -43,7 +43,7 @@ public class AutocompleteTest {
      * @throws SQLException if the test database cannot be connected to
      */
     @BeforeEach
-    public void setup() throws SQLException {
+    public void setup() throws SQLException { // Jeffrey Gilbert
         // Initialize the DAO with a Supplier that generates H2 connections
         wordDao = new WordDAO(() -> {
             try {
@@ -97,7 +97,7 @@ public class AutocompleteTest {
     }
 
     @Test
-    public void testSuggestThreeWords(){      
+    public void testSuggestThreeWords(){ // Jeffrey Gilbert
         for(String input: inputWords){
             List<String> output = ac.suggestThreeWords(input);
             System.out.println("Input word: " + input);

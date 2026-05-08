@@ -10,9 +10,12 @@ import javafx.scene.control.TextArea;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.binding.Bindings;
 import com.cs4485.sentencebuilder.Autocomplete;
+import com.cs4485.sentencebuilder.WordAnalyzer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import com.cs4485.sentencebuilder.model.entity.Word;
 
 /**
  * Controller for the auto-complete tab
@@ -25,6 +28,8 @@ import java.util.List;
  * 4/30/2026 - Finished bulk of integration work, still need to work out adding to db - Jeffrey Gilbert
  * 5/1/2026 - Fixing issues with spacing and bugs, adding more features to the tab - Jeffrey Gilbert
  */
+
+// Written by Jeffrey Gilbert
 public class AutoCompleteTabController {
     @FXML
     private TextArea autocompleteInput;
@@ -38,15 +43,16 @@ public class AutoCompleteTabController {
     private Autocomplete ac;
 
     @FXML
-    private void initialize() {
+    private void initialize() { // Jeffrey Gilbert
         ac  = new Autocomplete();
+        wordDAO = new WordDAO(); // just for insertion because it's a pain
 
         // Add listener to call function whenever text updates
         autocompleteInput.textProperty().addListener(
                 (observable, oldValue, newValue) -> {onTextUpdate(newValue);});
 
         // Stop user from pressing use suggestion if suggestion box is empty
-        useSuggestionButton.disableProperty().bind(Bindings.isEmpty(autocompleteInput.textProperty()));
+        useSuggestionButton.disableProperty().bind(Bindings.isEmpty(suggestionsList.getItems()));
 
         // Stop user from pressing clear button if both text boxes are empty
         clearAutocompleteButton.disableProperty().bind(autocompleteInput.textProperty().isEmpty()
@@ -55,7 +61,7 @@ public class AutoCompleteTabController {
     }
 
     @FXML
-    protected void onTextUpdate(String text) {
+    protected void onTextUpdate(String text) { // Jeffrey Gilbert
         if (text == null || text.isEmpty()) { // Check if text box is empty
             suggestionsList.getItems().clear();
             return;
@@ -69,15 +75,24 @@ public class AutoCompleteTabController {
         // Get last word and generate suggestions list
         String lastWord = getLastWord(text);
 
-        // TODO: If last word is not in database, add into database
-
         if  (!lastWord.isEmpty()) {
+            // Insert or update was the easiest way I could think of to make sure new words are added
+            // Have to do some janky stuff to get a proper Word object because WordAnalyzer is bad
+            List<String> lastWordList =  new ArrayList<>();
+            lastWordList.add(lastWord);
+            Map<String, Word> analyzerOutput = WordAnalyzer.getWords(lastWordList);
+            Word lastWordObject = analyzerOutput.values().iterator().next();
+            lastWordObject.setStartCount(0); // Little bit jank but there's no good way to get startCount without taking in the
+            //whole text box at a time, which is not feasible
+            wordDAO.insertOrUpdate(lastWordObject); // Only value in the Map is the word we want
+
+            // Generate suggestions
             generateSuggestions(lastWord);
         }
     }
 
     @FXML
-    private String getLastWord(String text) {
+    private String getLastWord(String text) { // Jeffrey Gilbert
         String trimmed = text.trim();
         int lastSpace = Math.max(
                 trimmed.lastIndexOf(' '),
@@ -90,36 +105,37 @@ public class AutoCompleteTabController {
     }
 
     @FXML
-    private Boolean isCutoff(String text) {
+    private Boolean isCutoff(String text) { // Jeffrey Gilbert
+        // Check if last character is a space or punctuation
         char c = text.charAt(text.length() - 1);
-
         return Character.isWhitespace(c) || c == '.' || c == ',' || c == '!' || c == '?';
     }
 
     @FXML
-    protected void generateSuggestions(String lastWord) {
+    protected void generateSuggestions(String lastWord) { // Jeffrey Gilbert
+        // Get top 3 suggestions
         List<String> suggestions = ac.suggestThreeWords(lastWord);
 
+        // Cast to ObservableList because javaFX is weird
         ObservableList<String> observableSuggestions =
                 FXCollections.observableArrayList(suggestions);
 
+        // Set items
         suggestionsList.setItems(observableSuggestions);
     }
 
     @FXML
-    protected void onUseSuggestion() {
-
+    protected void onUseSuggestion() { // Jeffrey Gilbert
+        // Get item
         String selected = suggestionsList.getSelectionModel().getSelectedItem();
         if (selected == null) {
             return;
         }
-
+        // Check last character for spacing
         String text = autocompleteInput.getText();
-
         // If empty or last character is whitespace, no leading space needed
         boolean endsWithWhitespace =
                 Character.isWhitespace(text.charAt(text.length() - 1));
-
         boolean isPunctuation =
                 selected.length() == 1 &&
                         !Character.isLetterOrDigit(text.charAt(0));
@@ -134,13 +150,15 @@ public class AutoCompleteTabController {
             autocompleteInput.appendText(" ");
         }
 
+        // Append to text box
         autocompleteInput.appendText(selected);
-
+        // Generate new suggestions
         generateSuggestions(selected);
     }
 
     @FXML
-    protected void onClearAutocomplete() {
+    protected void onClearAutocomplete() { // Jeffrey Gilbert
+        // Self explanatory
         autocompleteInput.clear();
         suggestionsList.getItems().clear();
     }

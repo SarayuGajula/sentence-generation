@@ -16,7 +16,7 @@ import com.cs4485.sentencebuilder.model.entity.Bigram;
 import com.cs4485.sentencebuilder.model.dao.WordDAO;
 import com.cs4485.sentencebuilder.model.dao.BigramDAO;
 
-public class Autocomplete {
+public class Autocomplete { // Jeffrey Gilbert
 
     static final String punctRegex = "[.!?;]+";
 
@@ -27,7 +27,7 @@ public class Autocomplete {
      * Production Constructor:
      * Defaults to the real database
      */
-    public Autocomplete() {
+    public Autocomplete() { // Jeffrey Gilbert
         this.wordDAO = new WordDAO();
         this.bigramDAO = new BigramDAO();
     }
@@ -36,25 +36,23 @@ public class Autocomplete {
      * Testing Constructor:
      * Accepts a custom way to reach database
      */
-    public Autocomplete(WordDAO wordDAO, BigramDAO bigramDAO) {
+    public Autocomplete(WordDAO wordDAO, BigramDAO bigramDAO) { // Jeffrey Gilbert
         this.wordDAO = wordDAO;
         this.bigramDAO = bigramDAO;
     }
 
-    public List<String> suggestThreeWords(String start){
+    public List<String> suggestThreeWords(String start){ // Jeffrey Gilbert
         String word = start.toLowerCase().replaceAll(punctRegex + "$", ""); // word to display next
-        int count = 0; // for debugging
-
         List<Bigram> bigrams = bigramDAO.getTopKMostCommonBigramsStartingWithWord(3, word.toLowerCase()); // get 3 most common bigrams
         List<String> wordOptions = new ArrayList<>();
-        for (Bigram bigram : bigrams) {
+        for (Bigram bigram : bigrams) { // get second word in each bigram
             wordOptions.add(checkCapitalization(bigram.getSecondWord()));
         }
 
         return wordOptions;
     }
 
-    private String checkCapitalization(String str){
+    private String checkCapitalization(String str){ // Jeffrey Gilbert
         Word word = wordDAO.get(str);
         String strCopy = str;
         int wordCount = word.getTotalCount();
