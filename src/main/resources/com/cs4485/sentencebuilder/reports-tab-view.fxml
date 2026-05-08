@@ -23,6 +23,7 @@
 
         <Label text="Generated Sentences History:" style="-fx-font-weight: bold;"/>
 
+        <!-- Table showing every sentence generated so far, along with the algorithm used and when it was created -->
         <TableView fx:id="sentencesTable" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="sentenceCol"     text="Sentence"      prefWidth="480"/>
@@ -32,6 +33,7 @@
             <placeholder><Label text="No sentences generated yet."/></placeholder>
         </TableView>
 
+        <!-- Refresh button, right-aligned below the table -->
         <HBox>
             <Region HBox.hgrow="ALWAYS"/>
             <Button text="Refresh" onAction="#onRefresh" prefWidth="80"/>
