@@ -1,4 +1,4 @@
-import com.cs4485.sentencebuilder.WordAnalyzer;
+import com.cs4485.sentencebuilder.logic.WordAnalyzer;
 import com.cs4485.sentencebuilder.model.entity.Bigram;
 import com.cs4485.sentencebuilder.model.entity.Word;
 import org.junit.jupiter.api.BeforeEach;

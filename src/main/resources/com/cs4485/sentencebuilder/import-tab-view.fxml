@@ -26,7 +26,7 @@
         </HBox>
 
         <HBox spacing="8" alignment="CENTER_LEFT">
-            <Button text="Import File" onAction="#onImport" prefWidth="110"/>
+            <Button fx:id="importButton" text="Import File" onAction="#onImport" prefWidth="110"/>
             <Label fx:id="importStatus" style="-fx-text-fill: gray;"/>
         </HBox>
 

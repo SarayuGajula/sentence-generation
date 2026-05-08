@@ -1,10 +1,10 @@
-import com.cs4485.sentencebuilder.Generator;
+import com.cs4485.sentencebuilder.logic.Generator;
 import com.cs4485.sentencebuilder.model.dao.BigramDAO;
 import com.cs4485.sentencebuilder.model.dao.WordDAO;
 import com.cs4485.sentencebuilder.model.entity.Bigram;
 import com.cs4485.sentencebuilder.model.entity.Word;
-import com.cs4485.sentencebuilder.Tokenizer;
-import com.cs4485.sentencebuilder.WordAnalyzer;
+import com.cs4485.sentencebuilder.logic.Tokenizer;
+import com.cs4485.sentencebuilder.logic.WordAnalyzer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

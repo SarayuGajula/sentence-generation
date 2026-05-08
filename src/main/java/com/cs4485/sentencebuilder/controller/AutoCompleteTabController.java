@@ -7,10 +7,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.binding.Bindings;
-import com.cs4485.sentencebuilder.Autocomplete;
-import com.cs4485.sentencebuilder.WordAnalyzer;
+import com.cs4485.sentencebuilder.logic.Autocomplete;
+import com.cs4485.sentencebuilder.logic.WordAnalyzer;
 
 import java.util.ArrayList;
 import java.util.List;

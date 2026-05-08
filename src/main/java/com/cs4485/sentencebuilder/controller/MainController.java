@@ -1,4 +1,4 @@
-package com.cs4485.sentencebuilder;
+package com.cs4485.sentencebuilder.controller;
 
 /**
  * This is the controller for all of the UI elements.

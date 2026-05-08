@@ -1,4 +1,4 @@
-package com.cs4485.sentencebuilder;
+package com.cs4485.sentencebuilder.logic;
 
 /**
  * Provides utility methods for importing and tokenizing text files.

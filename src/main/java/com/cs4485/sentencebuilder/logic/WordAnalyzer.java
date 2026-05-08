@@ -1,4 +1,4 @@
-package com.cs4485.sentencebuilder;
+package com.cs4485.sentencebuilder.logic;
 
 import java.util.HashMap; // HashMap lets us store key-value pairs (token -> Word)
 import java.util.List;    // List is the data type for the input (a list of words)

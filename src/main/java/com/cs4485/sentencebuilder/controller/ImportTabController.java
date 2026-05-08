@@ -5,10 +5,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 
@@ -17,8 +14,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import com.cs4485.sentencebuilder.Tokenizer;
-import com.cs4485.sentencebuilder.WordAnalyzer;
+import com.cs4485.sentencebuilder.logic.Tokenizer;
+import com.cs4485.sentencebuilder.logic.WordAnalyzer;
 import com.cs4485.sentencebuilder.model.dao.BigramDAO;
 import com.cs4485.sentencebuilder.model.dao.SourceDAO;
 import com.cs4485.sentencebuilder.model.dao.WordDAO;
@@ -41,6 +38,7 @@ import com.cs4485.sentencebuilder.model.entity.Word;
 public class ImportTabController {
     @FXML private TextField filePathField;
     @FXML private Label importStatus;
+    @FXML private Button importButton;
     @FXML private TableView<Source> importedFilesTable;
     @FXML private TableColumn<Source, String> fileNameCol;
     @FXML private TableColumn<Source, Integer> wordCountCol;
@@ -59,6 +57,8 @@ public class ImportTabController {
 
         // Source currently has no importedAt/date field, so this prevents the column from being blank/erroring.
         importDateCol.setCellValueFactory(cellData -> new SimpleStringProperty("N/A"));
+
+        importButton.disableProperty().bind(filePathField.textProperty().isEmpty());
 
         // Load already imported sources from the database into the table.
         refreshTable();

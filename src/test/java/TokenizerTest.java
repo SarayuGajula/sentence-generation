@@ -1,4 +1,4 @@
-import com.cs4485.sentencebuilder.Tokenizer;
+import com.cs4485.sentencebuilder.logic.Tokenizer;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;

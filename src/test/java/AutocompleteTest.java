@@ -1,6 +1,6 @@
-import com.cs4485.sentencebuilder.Autocomplete;
-import com.cs4485.sentencebuilder.Tokenizer;
-import com.cs4485.sentencebuilder.WordAnalyzer;
+import com.cs4485.sentencebuilder.logic.Autocomplete;
+import com.cs4485.sentencebuilder.logic.Tokenizer;
+import com.cs4485.sentencebuilder.logic.WordAnalyzer;
 import com.cs4485.sentencebuilder.model.dao.BigramDAO;
 import com.cs4485.sentencebuilder.model.dao.WordDAO;
 import com.cs4485.sentencebuilder.model.entity.Bigram;
